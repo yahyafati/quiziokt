@@ -19,7 +19,6 @@ class Question(
     var multi: Boolean,
 
     @ManyToOne
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var quiz: Quiz?
 ) : Auditable(), IModel {
 
