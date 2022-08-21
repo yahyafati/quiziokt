@@ -4,6 +4,4 @@ import com.example.quizbuilder.model.Quiz
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface QuizDao : JpaRepository<Quiz, Int> {
-
-    override fun existsById(id : Int): Boolean;
 }

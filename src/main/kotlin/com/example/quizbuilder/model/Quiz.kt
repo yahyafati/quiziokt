@@ -9,11 +9,11 @@ import javax.persistence.Id
 
 @Entity
 class Quiz (
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id:Int,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id:Int=0,
     @Column(nullable = false)
-    var title: String,
-    var description: String
-    ) : Auditable() {
+    var title: String?,
+    var description: String?
+    ) : Auditable(), IModel {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
