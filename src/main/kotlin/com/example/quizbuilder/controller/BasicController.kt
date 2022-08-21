@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 interface BasicController<T : IModel> {
 
     @GetMapping("")
-    fun getAll(): ResponseEntity<List<T>>;
+    fun getAll(): ResponseEntity<Any>;
 
     @GetMapping("/{id}")
     fun getOne(@PathVariable id:Int): ResponseEntity<Any>;
