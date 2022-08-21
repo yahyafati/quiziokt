@@ -12,6 +12,7 @@ class Quiz (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id:Int,
     @Column(nullable = false)
     var title: String,
+    var description: String
     ) : Auditable() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

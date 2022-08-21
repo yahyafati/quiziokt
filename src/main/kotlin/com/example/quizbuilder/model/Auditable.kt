@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedBy
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.sql.Timestamp
+import javax.persistence.Column
 import javax.persistence.EntityListeners
 import javax.persistence.ManyToOne
 import javax.persistence.MappedSuperclass
@@ -23,8 +24,9 @@ open class Auditable (
     var lastModifiedBy: User? = null,
 
     @CreatedDate
-    var creationTime: Timestamp? = null,
+    @Column(updatable = false)
+    var createdAt: Timestamp? = null,
 
     @LastModifiedDate
-    var updateTime: Timestamp? = null
+    var updatedAt: Timestamp? = null
 )
