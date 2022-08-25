@@ -10,7 +10,7 @@ import javax.persistence.*
 @EntityListeners(AuditingEntityListener::class)
 class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int,
+    var id: Int = 0,
     @CreatedDate
     var creationTime: Timestamp,
     @LastModifiedDate

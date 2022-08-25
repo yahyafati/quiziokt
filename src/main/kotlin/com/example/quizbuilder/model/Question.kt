@@ -7,11 +7,10 @@ import javax.persistence.*
 @JsonFilter("QuestionFilter")
 class Question(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int,
+    var id: Int = 0,
     @Column(nullable = false)
     var text: String,
     var multi: Boolean,
-
     @ManyToOne
     var quiz: Quiz?
 ) : Auditable(), IModel {
