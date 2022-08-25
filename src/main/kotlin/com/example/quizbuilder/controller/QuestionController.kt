@@ -26,7 +26,7 @@ class QuestionController (val questionService: IQuestionService) : BasicControll
 
     @GetMapping("/{id}")
     override fun getOne(@PathVariable id: Int): ResponseEntity<Any> {
-        val question = questionService.findQuestionById(id) ?: return ResponseEntity.notFound().build()
+        val question = questionService.findQuestionById(id)
         return ResponseEntity.ok(question)
     }
 
@@ -39,7 +39,7 @@ class QuestionController (val questionService: IQuestionService) : BasicControll
     @PutMapping("/{id}")
     override fun update(@PathVariable id: Int, @RequestBody item: Question): ResponseEntity<Any> {
         item.id = id
-        val updated = questionService.update(item) ?: return ResponseEntity.notFound().build()
+        val updated = questionService.update(item)
         return ResponseEntity.ok(updated)
     }
 

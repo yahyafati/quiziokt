@@ -5,12 +5,13 @@ import com.example.quizbuilder.exception.ResourceNotFoundException
 import com.example.quizbuilder.model.Question
 import com.example.quizbuilder.model.Quiz
 import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
 class QuestionService(val questionDao: QuestionDao, val quizService: IQuizService) : IQuestionService{
     override fun findQuestions(): List<Question> {
-        return questionDao.findAll();
+        return questionDao.findAll()
     }
 
     override fun findQuestionById(id: Int): Question {
@@ -27,7 +28,7 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
     }
 
     override fun save(question: Question): Question {
-        val quiz: Quiz = question.quiz ?: throw IllegalArgumentException("no quiz provided")
+        val quiz: Quiz = question.quiz ?: throw ResourceNotFoundException("no quiz provided", HttpStatus.CONFLICT)
         question.quiz = quizService.findQuizById(quiz.id)
         return questionDao.save(question)
     }
@@ -44,7 +45,7 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
         try {
             questionDao.deleteById(id)
         } catch (e: EmptyResultDataAccessException) {
-            throw ResourceNotFoundException("no question exists with the given question id: $id")
+            throw ResourceNotFoundException.createWith("question", id)
         }
     }
 
