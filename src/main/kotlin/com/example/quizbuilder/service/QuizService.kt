@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class QuizService(val quizDao: QuizDao) : IQuizService {
+    override fun exists(id: Int): Boolean {
+        return quizDao.existsById(id);
+    }
 
     override fun findQuizzes(): List<Quiz> {
         return quizDao.findAll()
@@ -26,7 +29,7 @@ class QuizService(val quizDao: QuizDao) : IQuizService {
     }
 
     override fun update(quiz: Quiz): Quiz? {
-        val exists = quizDao.existsById(quiz.id)
+        val exists = exists(quiz.id)
         if (!exists) {
             return null
         }
