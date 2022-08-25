@@ -38,4 +38,10 @@ class QuizQuestionController(val questionService: IQuestionService) {
         return ResponseEntity.ok(value)
     }
 
+    @DeleteMapping("/questions/{questionId}")
+    fun deleteQuestion(@PathVariable quizId: Int, @PathVariable questionId: Int): ResponseEntity<Any> {
+        questionService.deleteByQuizAndId(quizId, questionId)
+        return ResponseEntity.ok().build()
+    }
+
 }
