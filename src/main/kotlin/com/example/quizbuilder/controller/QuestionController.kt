@@ -4,18 +4,11 @@ import com.example.quizbuilder.model.Question
 import com.example.quizbuilder.service.IQuestionService
 import com.example.quizbuilder.utils.Util
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/question")
-class QuestionController (val questionService: IQuestionService) : BasicController<Question> {
+class QuestionController(val questionService: IQuestionService) : BasicController<Question> {
 
     @GetMapping("")
     override fun getAll(): ResponseEntity<Any> {
@@ -31,8 +24,8 @@ class QuestionController (val questionService: IQuestionService) : BasicControll
     }
 
     @PostMapping("")
-    override fun post(@RequestBody item:Question) : ResponseEntity<Any> {
-        item.id=0
+    override fun post(@RequestBody item: Question): ResponseEntity<Any> {
+        item.id = 0
         return ResponseEntity.ok(questionService.save(item))
     }
 

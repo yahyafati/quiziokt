@@ -18,13 +18,12 @@ class QuizQuestionService(val quizService: IQuizService, val questionService: IQ
     }
 
     override fun saveQuestion(quizId: Int, question: Question): Question {
-        question.quiz = Quiz(id=quizId)
+        question.quiz = Quiz(id = quizId)
         return questionService.save(question)
     }
 
-    override fun updateQuestion(quizId: Int, questionId: Int, question: Question): Question {
-        question.id = questionId
-        question.quiz = Quiz(id=quizId)
+    override fun updateQuestion(quizId: Int, question: Question): Question {
+        question.quiz = Quiz(id = quizId)
         return questionService.update(question)
     }
 

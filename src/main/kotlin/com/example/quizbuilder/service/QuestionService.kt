@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
-class QuestionService(val questionDao: QuestionDao, val quizService: IQuizService) : IQuestionService{
+class QuestionService(val questionDao: QuestionDao, val quizService: IQuizService) : IQuestionService {
     override fun findQuestions(): List<Question> {
         return questionDao.findAll()
     }
@@ -20,7 +20,8 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
     }
 
     override fun findQuestionByQuizAndId(quizId: Int, questionId: Int): Question {
-        return questionDao.findByQuizAndId(Quiz(id = quizId), questionId).orElseThrow { ResourceNotFoundException.createWith("question") }
+        return questionDao.findByQuizAndId(Quiz(id = quizId), questionId)
+            .orElseThrow { ResourceNotFoundException.createWith("question") }
     }
 
     override fun findQuestionsByQuizId(quizId: Int): List<Question> {

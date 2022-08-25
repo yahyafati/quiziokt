@@ -13,7 +13,7 @@ import org.springframework.web.util.WebUtils
 @ControllerAdvice
 class GlobalExceptionHandler {
 
-    @ExceptionHandler(*[ResourceNotFoundException::class])
+    @ExceptionHandler(ResourceNotFoundException::class)
     fun handleException(ex: Exception, request: WebRequest): ResponseEntity<ErrorResponse> {
         val headers = HttpHeaders()
         return if (ex is ResourceNotFoundException) {
@@ -24,7 +24,10 @@ class GlobalExceptionHandler {
         }
     }
 
-    private fun handleResourceNotFoundException(exception: ResourceNotFoundException, headers: HttpHeaders, ): ResponseEntity<ErrorResponse> {
+    private fun handleResourceNotFoundException(
+        exception: ResourceNotFoundException,
+        headers: HttpHeaders,
+    ): ResponseEntity<ErrorResponse> {
         val status = exception.status
         return ResponseEntity<ErrorResponse>(ErrorResponse(exception.message), headers, status)
     }

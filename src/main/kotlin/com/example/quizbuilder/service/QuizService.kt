@@ -3,14 +3,13 @@ package com.example.quizbuilder.service
 import com.example.quizbuilder.dao.QuizDao
 import com.example.quizbuilder.exception.ResourceNotFoundException
 import com.example.quizbuilder.model.Quiz
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 
 @Service
 class QuizService(val quizDao: QuizDao) : IQuizService {
     override fun exists(id: Int): Boolean {
-        return quizDao.existsById(id);
+        return quizDao.existsById(id)
     }
 
     override fun findQuizzes(): List<Quiz> {

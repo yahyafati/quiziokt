@@ -1,15 +1,11 @@
 package com.example.quizbuilder.model
 
 import org.hibernate.Hibernate
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
 @Entity
-class Quiz (
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id:Int=0,
+class Quiz(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Int = 0,
     @Column(nullable = false)
     var title: String? = "",
     var description: String? = ""
@@ -22,5 +18,9 @@ class Quiz (
     }
 
     override fun hashCode(): Int = javaClass.hashCode()
+    override fun toString(): String {
+        return "Quiz(id=$id, title=$title, description=$description)"
+    }
+
 
 }

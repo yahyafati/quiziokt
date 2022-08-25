@@ -1,13 +1,7 @@
 package com.example.quizbuilder.model
 
 import com.fasterxml.jackson.annotation.JsonFilter
-import com.fasterxml.jackson.annotation.JsonProperty
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.ManyToOne
+import javax.persistence.*
 
 @Entity
 @JsonFilter("QuestionFilter")
@@ -22,5 +16,7 @@ class Question(
     var quiz: Quiz?
 ) : Auditable(), IModel {
 
-
+    override fun toString(): String {
+        return "Question(id=$id, text='$text', multi=$multi)"
+    }
 }

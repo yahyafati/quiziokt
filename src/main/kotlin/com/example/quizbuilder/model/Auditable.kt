@@ -14,7 +14,7 @@ import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
-open class Auditable (
+open class Auditable(
     @CreatedBy
     @ManyToOne
     var createdBy: User? = null,

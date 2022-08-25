@@ -1,20 +1,20 @@
 package com.example.quizbuilder.controller
 
 import com.example.quizbuilder.model.IModel
-import com.example.quizbuilder.model.Quiz
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
 
 interface BasicController<T : IModel> {
 
-    fun getAll(): ResponseEntity<Any>;
+    fun getAll(): ResponseEntity<Any>
 
-    fun getOne(@PathVariable id:Int): ResponseEntity<Any>;
+    fun getOne(@PathVariable id: Int): ResponseEntity<Any>
 
-    fun post(@RequestBody item: T): ResponseEntity<Any>;
+    fun post(@RequestBody item: T): ResponseEntity<Any>
 
-    fun update(@PathVariable id:Int, @RequestBody item: T): ResponseEntity<Any> ;
+    fun update(@PathVariable id: Int, @RequestBody item: T): ResponseEntity<Any>
 
-    fun delete(@PathVariable id:Int) : ResponseEntity<Any>
+    fun delete(@PathVariable id: Int): ResponseEntity<Any>
 
 }
