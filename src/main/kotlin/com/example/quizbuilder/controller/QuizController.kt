@@ -1,5 +1,6 @@
 package com.example.quizbuilder.controller
 
+import com.example.quizbuilder.exception.ResourceNotFoundException
 import com.example.quizbuilder.model.Quiz
 import com.example.quizbuilder.service.IQuizService
 import org.springframework.http.ResponseEntity
@@ -25,7 +26,7 @@ class QuizController (val quizService: IQuizService) {
 
     @GetMapping("/{id}")
     fun getQuiz(@PathVariable id:Int): ResponseEntity<Any> {
-        val quiz : Quiz = quizService.findQuizById(id) ?: return ResponseEntity.notFound().build()
+        val quiz : Quiz = quizService.findQuizById(id) ?: throw ResourceNotFoundException("no quiz with provided id ($id)")
         return ResponseEntity.ok(quiz);
     }
 
@@ -44,10 +45,7 @@ class QuizController (val quizService: IQuizService) {
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id:Int) : ResponseEntity<Any>{
-        val deleted = quizService.delete(id)
-        if (!deleted) {
-            return ResponseEntity.notFound().build();
-        }
+        quizService.delete(id)
         return ResponseEntity.ok().build()
     }
 }

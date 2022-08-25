@@ -25,7 +25,7 @@ class GlobalExceptionHandler {
     }
 
     private fun handleResourceNotFoundException(exception: ResourceNotFoundException, headers: HttpHeaders, ): ResponseEntity<ErrorResponse> {
-        val status = HttpStatus.BAD_REQUEST
+        val status = exception.status
         return ResponseEntity<ErrorResponse>(ErrorResponse(exception.message), headers, status)
     }
 

@@ -6,6 +6,7 @@ import com.example.quizbuilder.model.Quiz
 import com.example.quizbuilder.service.IQuizQuestionService
 import com.example.quizbuilder.service.QuizQuestionService
 import com.example.quizbuilder.utils.ErrorResponse
+import com.example.quizbuilder.utils.Util
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -29,7 +30,8 @@ class QuizQuestionController(val quizQuestionService: IQuizQuestionService) {
     @GetMapping("/questions")
     fun getQuestions(@PathVariable quizId:Int): ResponseEntity<Any> {
         val questions = quizQuestionService.getQuestions(quizId)
-        return ResponseEntity.ok(questions)
+        val value = Util.applyFilterIn(questions, "QuestionFilter", "quiz")
+        return ResponseEntity.ok(value)
     }
 
 }

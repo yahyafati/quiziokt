@@ -7,16 +7,16 @@ interface IQuestionService {
 
     fun findQuestions() : List<Question>
 
-    fun findQuestionById(id: Int): Question?
+    fun findQuestionById(id: Int): Question
 
-    fun findQuestionByQuizAndId(quizId: Int, questionId: Int): Question?
+    fun findQuestionByQuizAndId(quizId: Int, questionId: Int): Question
 
     fun findQuestionsByQuizId(quizId: Int): List<Question>
 
     fun save(question: Question) : Question
 
-    fun update(question: Question): Question?
+    fun update(question: Question): Question
 
-    fun delete(id: Int) : Boolean
-    fun deleteByQuizAndId(quizId: Int, questionId: Int): Boolean
+    fun delete(id: Int)
+    fun deleteByQuizAndId(quizId: Int, questionId: Int)
 }

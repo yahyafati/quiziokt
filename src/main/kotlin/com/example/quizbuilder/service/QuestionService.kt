@@ -13,16 +13,13 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
         return questionDao.findAll();
     }
 
-    override fun findQuestionById(id: Int): Question? {
+    override fun findQuestionById(id: Int): Question {
         val questionOptional = questionDao.findById(id)
-        if (questionOptional.isEmpty) {
-            return null
-        }
-        return questionOptional.get()
+        return questionOptional.orElseThrow { ResourceNotFoundException.createWith("question", id) }
     }
 
-    override fun findQuestionByQuizAndId(quizId: Int, questionId: Int): Question? {
-        return questionDao.findByQuizAndId(Quiz(id = quizId), questionId)
+    override fun findQuestionByQuizAndId(quizId: Int, questionId: Int): Question {
+        return questionDao.findByQuizAndId(Quiz(id = quizId), questionId).orElseThrow { ResourceNotFoundException.createWith("question") }
     }
 
     override fun findQuestionsByQuizId(quizId: Int): List<Question> {
@@ -31,35 +28,32 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
 
     override fun save(question: Question): Question {
         val quiz: Quiz = question.quiz ?: throw IllegalArgumentException("no quiz provided")
-        if (quizService.findQuizById(quiz.id) == null)
-            throw ResourceNotFoundException("no quiz exists with given id (${quiz.id})")
+        question.quiz = quizService.findQuizById(quiz.id)
         return questionDao.save(question)
     }
 
-    override fun update(question: Question): Question? {
+    override fun update(question: Question): Question {
         val exists = questionDao.existsById(question.id)
         if (!exists) {
-            return null
+            throw ResourceNotFoundException.createWith("question", question.id)
         }
         return save(question)
     }
 
-    override fun delete(id: Int): Boolean {
+    override fun delete(id: Int) {
         try {
             questionDao.deleteById(id)
         } catch (e: EmptyResultDataAccessException) {
-            return false
+            throw ResourceNotFoundException("no question exists with the given question id: $id")
         }
-        return true
     }
 
-    override fun deleteByQuizAndId(quizId: Int, questionId: Int): Boolean {
+    override fun deleteByQuizAndId(quizId: Int, questionId: Int) {
         try {
             questionDao.deleteByQuizAndId(Quiz(id = quizId), questionId)
         } catch (e: EmptyResultDataAccessException) {
-            return false
+            throw ResourceNotFoundException("no question exists with the given quiz id ($quizId) and question id ($questionId)")
         }
-        return true
     }
 
 }

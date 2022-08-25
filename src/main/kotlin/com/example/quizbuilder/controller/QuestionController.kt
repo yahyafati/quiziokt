@@ -3,11 +3,7 @@ package com.example.quizbuilder.controller
 import com.example.quizbuilder.model.Question
 import com.example.quizbuilder.service.IQuestionService
 import com.example.quizbuilder.utils.Util
-import com.fasterxml.jackson.databind.ser.FilterProvider
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider
 import org.springframework.http.ResponseEntity
-import org.springframework.http.converter.json.MappingJacksonValue
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -24,7 +20,7 @@ class QuestionController (val questionService: IQuestionService) : BasicControll
     @GetMapping("")
     override fun getAll(): ResponseEntity<Any> {
         val questions = questionService.findQuestions()
-        val value = Util.applyFilter(questions, "QuestionFilter", "id", "text", "multi")
+        val value = Util.applyFilterOut(questions, "QuestionFilter", "id", "text", "multi")
         return ResponseEntity.ok(value)
     }
 
@@ -49,10 +45,7 @@ class QuestionController (val questionService: IQuestionService) : BasicControll
 
     @DeleteMapping("/{id}")
     override fun delete(@PathVariable id: Int): ResponseEntity<Any> {
-        val deleted = questionService.delete(id)
-        if (!deleted) {
-            return ResponseEntity.notFound().build()
-        }
+        questionService.delete(id)
         return ResponseEntity.ok().build()
     }
 

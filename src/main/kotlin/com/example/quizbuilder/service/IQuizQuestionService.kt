@@ -6,12 +6,12 @@ interface IQuizQuestionService {
 
     fun getQuestions(quizId: Int) : List<Question>
 
-    fun getQuestion(quizId: Int, questionId: Int) : Question?
+    fun getQuestion(quizId: Int, questionId: Int) : Question
 
     fun saveQuestion(quizId: Int, question: Question) : Question
 
-    fun updateQuestion(quizId: Int, questionId: Int, question: Question): Question?
+    fun updateQuestion(quizId: Int, questionId: Int, question: Question): Question
 
-    fun deleteQuestion(quizId: Int, questionId: Int): Boolean
+    fun deleteQuestion(quizId: Int, questionId: Int)
 
 }

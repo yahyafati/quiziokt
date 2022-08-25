@@ -7,12 +7,12 @@ interface IQuizService {
     fun exists(id: Int) : Boolean
     fun findQuizzes() : List<Quiz>
 
-    fun findQuizById(id: Int): Quiz?
+    fun findQuizById(id: Int): Quiz
 
     fun save(quiz: Quiz) : Quiz
 
-    fun update(quiz: Quiz): Quiz?
+    fun update(quiz: Quiz): Quiz
 
-    fun delete(id: Int) : Boolean
+    fun delete(id: Int)
 
 }

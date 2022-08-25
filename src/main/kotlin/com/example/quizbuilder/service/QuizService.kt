@@ -1,6 +1,7 @@
 package com.example.quizbuilder.service
 
 import com.example.quizbuilder.dao.QuizDao
+import com.example.quizbuilder.exception.ResourceNotFoundException
 import com.example.quizbuilder.model.Quiz
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
@@ -16,32 +17,28 @@ class QuizService(val quizDao: QuizDao) : IQuizService {
         return quizDao.findAll()
     }
 
-    override fun findQuizById(id: Int): Quiz? {
+    override fun findQuizById(id: Int): Quiz {
         val quizOptional = quizDao.findById(id)
-        if (quizOptional.isEmpty) {
-            return null
-        }
-        return quizOptional.get()
+        return quizOptional.orElseThrow { ResourceNotFoundException.createWith("quiz", id) }
     }
 
     override fun save(quiz: Quiz): Quiz {
         return quizDao.save(quiz)
     }
 
-    override fun update(quiz: Quiz): Quiz? {
+    override fun update(quiz: Quiz): Quiz {
         val exists = exists(quiz.id)
         if (!exists) {
-            return null
+            throw ResourceNotFoundException.createWith("quiz", quiz.id)
         }
         return save(quiz)
     }
 
-    override fun delete(id: Int): Boolean {
+    override fun delete(id: Int) {
         try {
             quizDao.deleteById(id)
         } catch (e: EmptyResultDataAccessException) {
-            return false
+            throw ResourceNotFoundException("no question exists with the given quiz id: $id")
         }
-        return true
     }
 }
