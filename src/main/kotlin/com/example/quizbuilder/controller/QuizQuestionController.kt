@@ -24,7 +24,7 @@ class QuizQuestionController(val questionService: IQuestionService) {
     fun updateQuestion(
         @PathVariable quizId: Int,
         @PathVariable questionId: Int,
-        @RequestBody question: Question
+        @RequestBody @Valid question: Question
     ): ResponseEntity<Any> {
         question.id = questionId
         question.quiz = Quiz(id = quizId)

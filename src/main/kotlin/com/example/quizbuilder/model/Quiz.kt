@@ -2,11 +2,13 @@ package com.example.quizbuilder.model
 
 import org.hibernate.Hibernate
 import javax.persistence.*
+import javax.validation.constraints.NotBlank
 
 @Entity
 class Quiz(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Int = 0,
     @Column(nullable = false)
+    @field:NotBlank(message = "Quiz title can't be blank")
     var title: String? = "",
     var description: String? = ""
 ) : Auditable(), IModel {
