@@ -1,10 +1,12 @@
 package com.yahya.quizbuilderkt.exception
 
 import com.yahya.quizbuilderkt.utils.ErrorResponse
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
@@ -14,21 +16,49 @@ import org.springframework.web.util.WebUtils
 @ControllerAdvice
 class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException::class, MethodArgumentNotValidException::class)
+    companion object {
+        private val LOG = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
+    }
+
+    @ExceptionHandler(
+        ResourceNotFoundException::class,
+        MethodArgumentNotValidException::class,
+        MissingServletRequestParameterException::class
+    )
     fun handleException(ex: Exception, request: WebRequest): ResponseEntity<ErrorResponse> {
         val headers = HttpHeaders()
         return when (ex) {
             is ResourceNotFoundException -> {
+                LOG.warn("ResourceNotFoundException: {}", ex.message)
                 handleResourceNotFoundException(ex, headers)
             }
             is MethodArgumentNotValidException -> {
+                LOG.warn(
+                    "MethodArgumentNotValidException: {} {}",
+                    ex.bindingResult.fieldErrors.map { "${it.field}: ${it.defaultMessage}" },
+                    ex.message
+                )
                 handleMethodArgumentNotValidException(ex, headers)
             }
+//            is MissingServletRequestParameterException -> {
+//                val status = HttpStatus.BAD_REQUEST
+//                handleMissingServletRequestParameterException(ex, headers, status)
+//            }
             else -> {
+                LOG.error("{} {}", ex.javaClass.name, ex.message)
                 val status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
                 handleExceptionInternal(ex, ErrorResponse(ex.message), headers, status, request)
             }
         }
+    }
+
+    private fun handleMissingServletRequestParameterException(
+        ex: MissingServletRequestParameterException,
+        headers: HttpHeaders,
+        status: HttpStatus
+    ): ResponseEntity<ErrorResponse> {
+        val message = "No ${ex.parameterName} of type ${ex.parameterType} provided"
+        return ResponseEntity.status(status).headers(headers).body(ErrorResponse(message, exception = ex))
     }
 
     private fun handleMethodArgumentNotValidException(

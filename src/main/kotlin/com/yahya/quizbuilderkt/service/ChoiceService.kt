@@ -36,10 +36,9 @@ class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionServ
     }
 
     override fun update(choice: Choice): Choice {
-        val exists = choiceDao.existsById(choice.id)
-        if (!exists) {
-            throw ResourceNotFoundException.createWith("choice", choice.id)
-        }
+        val exists =
+            choiceDao.findById(choice.id).orElseThrow { ResourceNotFoundException.createWith("choice", choice.id) }
+        choice.question = Question(id = exists.id)
         return save(choice)
     }
 

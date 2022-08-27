@@ -24,11 +24,8 @@ class QuestionController(val questionService: IQuestionService) : BasicControlle
         return ResponseEntity.ok(question)
     }
 
-    //    @PostMapping("")
     override fun post(@RequestBody @Valid item: Question): ResponseEntity<Any> {
         throw NotImplementedError("Question can't be posted without quizId")
-//        item.id = 0
-//        return ResponseEntity.ok(questionService.save(item))
     }
 
     @PutMapping("/{id}")
