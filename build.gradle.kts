@@ -17,17 +17,29 @@ repositories {
 }
 
 dependencies {
+    val configurationProcessor = "org.springframework.boot:spring-boot-configuration-processor"
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    annotationProcessor(configurationProcessor)
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     runtimeOnly("mysql:mysql-connector-java")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+
 }
 
+//kapt {
+//    annotationProcessor("org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor")
+//}
+//tasks.named("compileJava") {
+//    inputs.files(tasks.named("processResources"))
+//}
+
 tasks.withType<KotlinCompile> {
+    dependsOn(tasks.named("processResources"))
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "17"

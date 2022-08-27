@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "com.app.error.showStacktrace",
+      "type": "java.lang.Boolean",
+      "description": "Description for app.error.showStacktrace."
+    }
+  ]
+}

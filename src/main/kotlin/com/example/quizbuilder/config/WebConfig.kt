@@ -1,5 +1,6 @@
 package com.example.quizbuilder.config
 
+import com.example.quizbuilder.config.properties.AppProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.ser.FilterProvider
@@ -19,7 +20,7 @@ import java.text.SimpleDateFormat
 
 @Configuration
 @EnableWebMvc
-class WebConfig : WebMvcConfigurer {
+class WebConfig(val appProperties: AppProperties) : WebMvcConfigurer {
 
     companion object {
         val LOG: Logger = LoggerFactory.getLogger(WebConfig::class.java)
@@ -39,7 +40,8 @@ class WebConfig : WebMvcConfigurer {
 
     @Bean
     fun errorResponseFilterProvider(): FilterProvider {
-        val filter: SimpleBeanPropertyFilter = SimpleBeanPropertyFilter.serializeAllExcept("stacktrace")
-        return SimpleFilterProvider().addFilter("errorFilter", filter)
+        val except: Set<String> = if (appProperties.error?.showStackTrace != true) setOf("stacktrace") else setOf()
+        val filter: SimpleBeanPropertyFilter = SimpleBeanPropertyFilter.serializeAllExcept(except)
+        return SimpleFilterProvider().addFilter("errorFilter", filter).setFailOnUnknownId(false)
     }
 }
