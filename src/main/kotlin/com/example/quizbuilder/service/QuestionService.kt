@@ -5,7 +5,6 @@ import com.example.quizbuilder.exception.ResourceNotFoundException
 import com.example.quizbuilder.model.Question
 import com.example.quizbuilder.model.Quiz
 import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
@@ -29,7 +28,7 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
     }
 
     override fun save(question: Question): Question {
-        val quiz: Quiz = question.quiz ?: throw ResourceNotFoundException("no quiz provided", HttpStatus.CONFLICT)
+        val quiz: Quiz = question.quiz ?: throw ResourceNotFoundException("no quiz provided")
         question.quiz = quizService.findQuizById(quiz.id)
         return questionDao.save(question)
     }

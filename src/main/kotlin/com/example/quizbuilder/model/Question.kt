@@ -11,10 +11,10 @@ class Question(
     var id: Int = 0,
     @Column(nullable = false)
     @field:NotBlank(message = "Question text can't be empty")
-    var text: String,
-    var multi: Boolean,
+    var text: String? = null,
+    var multi: Boolean = false,
     @ManyToOne
-    var quiz: Quiz?
+    var quiz: Quiz? = null
 ) : Auditable(), IModel {
 
     override fun toString(): String {

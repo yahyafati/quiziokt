@@ -1,5 +1,6 @@
 package com.example.quizbuilder.model
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.Hibernate
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
@@ -10,7 +11,12 @@ class Quiz(
     @Column(nullable = false)
     @field:NotBlank(message = "Quiz title can't be blank")
     var title: String? = "",
-    var description: String? = ""
+    var description: String? = null,
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    var permalink: String? = null,
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    var published: Boolean = false,
+    val shufflable: Boolean = false,
 ) : Auditable(), IModel {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -20,8 +26,9 @@ class Quiz(
     }
 
     override fun hashCode(): Int = javaClass.hashCode()
+
     override fun toString(): String {
-        return "Quiz(id=$id, title=$title, description=$description)"
+        return "Quiz(id=$id, title=$title, description=$description, permalink=$permalink, published=$published, shufflable=$shufflable)"
     }
 
 
