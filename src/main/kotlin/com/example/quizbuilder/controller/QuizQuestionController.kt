@@ -6,13 +6,14 @@ import com.example.quizbuilder.service.IQuestionService
 import com.example.quizbuilder.utils.Util
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1/quiz/{quizId}")
 class QuizQuestionController(val questionService: IQuestionService) {
 
     @PostMapping("/questions")
-    fun postQuestion(@PathVariable quizId: Int, @RequestBody question: Question): ResponseEntity<Any> {
+    fun postQuestion(@PathVariable quizId: Int, @Valid @RequestBody question: Question): ResponseEntity<Any> {
         question.id = 0
         question.quiz = Quiz(id = quizId)
         val saveQuestion = questionService.save(question)
