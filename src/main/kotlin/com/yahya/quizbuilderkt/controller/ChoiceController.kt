@@ -20,10 +20,14 @@ class ChoiceController(private val choiceService: IChoiceService) {
     @PostMapping("")
     fun post(
         @Valid @RequestBody items: List<Choice>,
-        @RequestParam(name = "question") questionId: Int
+        @RequestParam(name = "question") questionId: Int,
+//        @RequestParam(defaultValue = "true") replace: Boolean
     ): ResponseEntity<Any> {
-        items.forEach { it.question = Question(id = questionId) }
-        val saved = choiceService.saveAll(items)
+        items.forEach {
+            it.id = 0
+            it.question = Question(id = questionId)
+        }
+        val saved = choiceService.saveAll(items, true)
         return ResponseEntity.ok(saved)
     }
 

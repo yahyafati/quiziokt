@@ -11,4 +11,6 @@ interface ChoiceDao : JpaRepository<Choice, Int> {
     fun findAllByQuestionId(questionId: Int): List<Choice>
 
     fun deleteByQuestionAndId(question: Question, id: Int)
+
+    fun deleteAllByQuestionId(questionId: Int)
 }

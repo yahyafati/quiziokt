@@ -1,11 +1,13 @@
 package com.yahya.quizbuilderkt.service
 
 import com.yahya.quizbuilderkt.dao.ChoiceDao
+import com.yahya.quizbuilderkt.exception.InvalidQuestionException
 import com.yahya.quizbuilderkt.exception.ResourceNotFoundException
 import com.yahya.quizbuilderkt.model.Choice
 import com.yahya.quizbuilderkt.model.Question
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionService) : IChoiceService {
@@ -38,14 +40,37 @@ class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionServ
 
     }
 
-    override fun saveAll(choices: List<Choice>): List<Choice> {
+    @Transactional
+    override fun saveAll(choices: List<Choice>, replace: Boolean): List<Choice> {
         if (choices.isEmpty()) {
-            return choices
+            throw InvalidQuestionException.noChoiceProvided()
         }
         val questionId = choices[0].question?.id ?: throw IllegalArgumentException("no question provided")
+        val question = questionService.findQuestionById(questionId)
+        if (replace) {
+            choiceDao.deleteAllByQuestionId(questionId)
+        }
+        val allChoices: List<Choice> =
+            if (replace) choices else {
+                val list = mutableListOf<Choice>()
+                list.addAll(choiceDao.findAllByQuestionId(questionId))
+                list.addAll(choices)
+                return list
+            }
+
         val anyConflict = choices.any { it.question?.id != questionId }
         if (anyConflict) {
             throw IllegalArgumentException("all choices must be for the same question")
+        }
+
+
+        val numberOfAnswers = allChoices.count { it.answer }
+        if (numberOfAnswers == 0) {
+            // Check if it has any answer
+            throw InvalidQuestionException.noAnswerProvided()
+        } else if (numberOfAnswers > 1 && !question.multi) {
+            // Check the number of answers
+            throw InvalidQuestionException.multipleAnswerProvided()
         }
         return choiceDao.saveAll(choices)
     }

@@ -14,7 +14,7 @@ interface IChoiceService {
 
     fun save(choice: Choice): Choice
 
-    fun saveAll(choices: List<Choice>): List<Choice>
+    fun saveAll(choices: List<Choice>, replace: Boolean): List<Choice>
 
     fun update(choice: Choice): Choice
 

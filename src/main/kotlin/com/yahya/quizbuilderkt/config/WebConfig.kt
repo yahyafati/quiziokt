@@ -42,8 +42,10 @@ class WebConfig(val appProperties: AppProperties) : WebMvcConfigurer {
 
     @Bean
     fun errorResponseFilterProvider(): FilterProvider {
-        val except: Set<String> = if (appProperties.error?.showStackTrace != true) setOf("stacktrace") else setOf()
+        val showStackTrace = appProperties.error?.showStackTrace == true
+        LOG.info("showStackTrace: {}", showStackTrace)
+        val except: Set<String> = if (showStackTrace) setOf() else setOf("stacktrace")
         val filter: SimpleBeanPropertyFilter = SimpleBeanPropertyFilter.serializeAllExcept(except)
-        return SimpleFilterProvider().addFilter("errorFilter", filter).setFailOnUnknownId(false)
+        return SimpleFilterProvider().addFilter("errorFilter", filter)
     }
 }
