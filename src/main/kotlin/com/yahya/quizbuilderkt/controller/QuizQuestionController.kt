@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 //@RestController
-//@RequestMapping("/api/v1/quiz/{quizId}")
+@RequestMapping("/api/v1/quiz/{quizId}")
 class QuizQuestionController(val questionService: IQuestionService) {
 
     @PostMapping("/questions")
