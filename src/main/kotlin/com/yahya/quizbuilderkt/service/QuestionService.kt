@@ -28,7 +28,11 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
             .orElseThrow { ResourceNotFoundException.createWith("question") }
     }
 
-    override fun getQuestionsByQuizId(quizId: Int): List<Question> {
+    override fun findQuestionsByQuizId(quizId: Int): List<Question> {
+        val exists = quizService.exists(quizId)
+        if (!exists) {
+            throw ResourceNotFoundException.createWith("quiz", quizId)
+        }
         return questionDao.findAllByQuizId(quizId)
     }
 

@@ -1,5 +1,6 @@
 package com.yahya.quizbuilderkt.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.Hibernate
 import javax.persistence.*
@@ -17,6 +18,10 @@ class Quiz(
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     var published: Boolean = false,
     val shufflable: Boolean = false,
+
+    @JsonIgnore
+    @OneToMany(cascade = [CascadeType.REMOVE], mappedBy = "quiz")
+    private val questions: List<Question> = emptyList()
 ) : Auditable(), IModel {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -26,9 +31,8 @@ class Quiz(
     }
 
     override fun hashCode(): Int = javaClass.hashCode()
-
     override fun toString(): String {
-        return "Quiz(id=$id, title=$title, description=$description, permalink=$permalink, published=$published, shufflable=$shufflable)"
+        return "Quiz(id=$id, title=$title, description=$description, permalink=$permalink, published=$published, shufflable=$shufflable, questions=${questions.size})"
     }
 
 

@@ -12,7 +12,7 @@ interface IQuestionService {
 
     fun findQuestionByQuizAndId(quizId: Int, questionId: Int): Question
 
-    fun getQuestionsByQuizId(quizId: Int): List<Question>
+    fun findQuestionsByQuizId(quizId: Int): List<Question>
 
     fun save(question: Question): Question
 

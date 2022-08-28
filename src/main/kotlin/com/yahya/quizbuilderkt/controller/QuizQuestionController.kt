@@ -10,7 +10,7 @@ import javax.validation.Valid
 
 //@RestController
 @RequestMapping("/api/v1/quiz/{quizId}")
-class QuizQuestionController(val questionService: IQuestionService) {
+class QuizQuestionController(private val questionService: IQuestionService) {
 
     @PostMapping("/questions")
     fun postQuestion(@PathVariable quizId: Int, @Valid @RequestBody question: Question): ResponseEntity<Any> {
@@ -34,7 +34,7 @@ class QuizQuestionController(val questionService: IQuestionService) {
 
     @GetMapping("/questions")
     fun getQuestions(@PathVariable quizId: Int): ResponseEntity<Any> {
-        val questions = questionService.getQuestionsByQuizId(quizId)
+        val questions = questionService.findQuestionsByQuizId(quizId)
         val value = Util.applyFilterIn(questions, "QuestionFilter", "quiz")
         return ResponseEntity.ok(value)
     }

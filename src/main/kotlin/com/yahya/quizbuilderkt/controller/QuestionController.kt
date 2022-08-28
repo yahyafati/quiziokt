@@ -13,8 +13,8 @@ import javax.validation.Valid
 class QuestionController(val questionService: IQuestionService) {
 
     @GetMapping("")
-    fun getAll(): ResponseEntity<Any> {
-        val questions = questionService.findQuestions()
+    fun getAll(@RequestParam quiz: Int): ResponseEntity<Any> {
+        val questions = questionService.findQuestionsByQuizId(quiz)
         val value = Util.applyFilterOut(questions, "QuestionFilter", "id", "text", "multi")
         return ResponseEntity.ok(value)
     }
