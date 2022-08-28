@@ -25,6 +25,9 @@ class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionServ
     }
 
     override fun getChoicesByQuestionId(questionId: Int): List<Choice> {
+        if (!questionService.exists(questionId)) {
+            throw ResourceNotFoundException.createWith("question", questionId)
+        }
         return choiceDao.findAllByQuestionId(questionId)
     }
 

@@ -5,6 +5,7 @@ import com.yahya.quizbuilderkt.model.Question
 
 interface IQuestionService {
 
+    fun exists(id: Int): Boolean
     fun findQuestions(): List<Question>
 
     fun findQuestionById(id: Int): Question

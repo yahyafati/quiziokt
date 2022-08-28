@@ -18,7 +18,7 @@ class ChoiceController(private val choiceService: IChoiceService) {
     }
 
     @PostMapping("")
-    fun post(@Valid @RequestBody item: Choice, @RequestParam questionId: Int): ResponseEntity<Any> {
+    fun post(@Valid @RequestBody item: Choice, @RequestParam(name = "question") questionId: Int): ResponseEntity<Any> {
         item.question = Question(id = questionId)
         val saved = choiceService.save(item)
         return ResponseEntity.ok(saved)

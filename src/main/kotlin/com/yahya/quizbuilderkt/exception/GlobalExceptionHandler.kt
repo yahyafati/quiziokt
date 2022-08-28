@@ -29,12 +29,13 @@ class GlobalExceptionHandler {
         val headers = HttpHeaders()
         return when (ex) {
             is ResourceNotFoundException -> {
-                LOG.warn("ResourceNotFoundException: {}", ex.message)
+                LOG.warn("{}: {}", ex.javaClass.name, ex.message)
                 handleResourceNotFoundException(ex, headers)
             }
             is MethodArgumentNotValidException -> {
                 LOG.warn(
-                    "MethodArgumentNotValidException: {} {}",
+                    "{}: {} {}",
+                    ex.javaClass.name,
                     ex.bindingResult.fieldErrors.map { "${it.field}: ${it.defaultMessage}" },
                     ex.message
                 )

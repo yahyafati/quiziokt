@@ -1,6 +1,8 @@
 package com.yahya.quizbuilderkt.model
 
 import com.fasterxml.jackson.annotation.JsonFilter
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
 
@@ -14,10 +16,14 @@ class Question(
     var text: String? = null,
     var multi: Boolean = false,
     @ManyToOne
-    var quiz: Quiz? = null
+    @JsonIgnore
+    var quiz: Quiz? = null,
+    @OneToMany(mappedBy = "question", cascade = [CascadeType.REMOVE])
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    var choices: List<Choice>? = null
 ) : Auditable(), IModel {
-
     override fun toString(): String {
-        return "Question(id=$id, text='$text', multi=$multi)"
+        return "Question(id=$id, text=$text, multi=$multi, quiz=$quiz, choices=${choices?.size})"
     }
+
 }

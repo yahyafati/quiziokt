@@ -1,6 +1,7 @@
 package com.yahya.quizbuilderkt.controller
 
 import com.yahya.quizbuilderkt.model.Question
+import com.yahya.quizbuilderkt.model.Quiz
 import com.yahya.quizbuilderkt.service.IQuestionService
 import com.yahya.quizbuilderkt.utils.Util
 import org.springframework.http.ResponseEntity
@@ -9,34 +10,37 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1/question")
-class QuestionController(val questionService: IQuestionService) : BasicController<Question> {
+class QuestionController(val questionService: IQuestionService) {
 
     @GetMapping("")
-    override fun getAll(): ResponseEntity<Any> {
+    fun getAll(): ResponseEntity<Any> {
         val questions = questionService.findQuestions()
         val value = Util.applyFilterOut(questions, "QuestionFilter", "id", "text", "multi")
         return ResponseEntity.ok(value)
     }
 
     @GetMapping("/{id}")
-    override fun getOne(@PathVariable id: Int): ResponseEntity<Any> {
+    fun getOne(@PathVariable id: Int): ResponseEntity<Any> {
         val question = questionService.findQuestionById(id)
         return ResponseEntity.ok(question)
     }
 
-    override fun post(@RequestBody @Valid item: Question): ResponseEntity<Any> {
-        throw NotImplementedError("Question can't be posted without quizId")
+    @PostMapping("")
+    fun post(@RequestBody @Valid item: Question, @RequestParam(name = "quiz") quizId: Int): ResponseEntity<Any> {
+        item.quiz = Quiz(id = quizId)
+        val saved = questionService.save(item)
+        return ResponseEntity.ok(saved)
     }
 
     @PutMapping("/{id}")
-    override fun update(@PathVariable id: Int, @RequestBody @Valid item: Question): ResponseEntity<Any> {
+    fun update(@PathVariable id: Int, @RequestBody @Valid item: Question): ResponseEntity<Any> {
         item.id = id
         val updated = questionService.update(item)
         return ResponseEntity.ok(updated)
     }
 
     @DeleteMapping("/{id}")
-    override fun delete(@PathVariable id: Int): ResponseEntity<Any> {
+    fun delete(@PathVariable id: Int): ResponseEntity<Any> {
         questionService.delete(id)
         return ResponseEntity.ok().build()
     }
