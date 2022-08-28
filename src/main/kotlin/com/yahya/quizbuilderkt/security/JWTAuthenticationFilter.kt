@@ -34,8 +34,8 @@ class JWTAuthenticationFilter(authenticationManager: AuthenticationManager) : Us
         return try {
             val credential: User = ObjectMapper().readValue(request.inputStream, User::class.java)
             val authentication: Authentication = UsernamePasswordAuthenticationToken(
-                credential.getUsername(),
-                credential.getPassword(),
+                credential.username,
+                credential.password,
                 listOf<GrantedAuthority>()
             )
             authenticationManager.authenticate(authentication)

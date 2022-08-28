@@ -2,6 +2,7 @@ package com.yahya.quizbuilderkt.model
 
 import com.fasterxml.jackson.annotation.JsonFilter
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -17,16 +18,21 @@ import javax.validation.constraints.NotBlank
 class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int = 0,
+
     @Column(unique = true)
     @field:NotBlank
-    private var username: String,
+    @JvmField
+    var username: String,
+
     @field:NotBlank
-    @JsonIgnore
-    private var password: String,
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JvmField
+    var password: String,
+
     @CreatedDate
-    var creationTime: Timestamp,
+    var creationTime: Timestamp? = null,
     @LastModifiedDate
-    var updateTime: Timestamp
+    var updateTime: Timestamp? = null
 ) : UserDetails {
 
     //    var version: Int = 0
