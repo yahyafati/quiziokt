@@ -9,4 +9,6 @@ object SecurityConstants {
     const val TOKEN_PREFIX = "Bearer "
     const val HEADER_STRING = "Authorization"
     const val LOGIN_URL = "/api/v1/user/login"
+    const val PASSWORD_REGEX: String = "(.*?)"
+//    const val PASSWORD_REGEX: String = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}\$"
 }

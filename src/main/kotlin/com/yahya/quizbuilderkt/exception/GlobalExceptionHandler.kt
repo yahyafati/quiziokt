@@ -24,7 +24,8 @@ class GlobalExceptionHandler {
         ResourceNotFoundException::class,
         MethodArgumentNotValidException::class,
         MissingServletRequestParameterException::class,
-        InvalidQuestionException::class
+        InvalidQuestionException::class,
+        UsernameTakenException::class
     )
     fun handleException(ex: Exception, request: WebRequest): ResponseEntity<ErrorResponse> {
         val headers = HttpHeaders()
@@ -51,12 +52,25 @@ class GlobalExceptionHandler {
 //                val status = HttpStatus.BAD_REQUEST
 //                handleMissingServletRequestParameterException(ex, headers, status)
 //            }
+            is UsernameTakenException -> {
+                LOG.warn("{} {}", ex.javaClass.name, ex.message)
+                val status = HttpStatus.BAD_REQUEST
+                handleUsernameTakenException(ex, headers, status)
+            }
             else -> {
                 LOG.error("{} {}", ex.javaClass.name, ex.message)
                 val status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
                 handleExceptionInternal(ex, ErrorResponse(ex.message), headers, status, request)
             }
         }
+    }
+
+    private fun handleUsernameTakenException(
+        ex: UsernameTakenException,
+        headers: HttpHeaders,
+        status: HttpStatus
+    ): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(status).headers(headers).body(ErrorResponse(ex.message, exception = ex))
     }
 
     private fun handleInvalidQuestionException(
