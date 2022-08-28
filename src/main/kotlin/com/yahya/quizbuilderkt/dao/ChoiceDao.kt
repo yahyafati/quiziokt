@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface ChoiceDao : JpaRepository<Choice, Int> {
 
     fun findByQuestionAndId(question: Question, id: Int): Choice?
+    fun findAllByQuestionIdAndQuestionCreatedByUsername(id: Int, username: String): List<Choice>
 
     fun findAllByQuestionId(questionId: Int): List<Choice>
 

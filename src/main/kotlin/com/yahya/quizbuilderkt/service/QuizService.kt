@@ -12,8 +12,16 @@ class QuizService(val quizDao: QuizDao) : IQuizService {
         return quizDao.existsById(id)
     }
 
+    override fun existsByIdAndUsername(id: Int, username: String): Boolean {
+        return quizDao.existsByIdAndCreatedByUsername(id, username)
+    }
+
     override fun findQuizzes(): List<Quiz> {
         return quizDao.findAll()
+    }
+
+    override fun findQuizzesBy(username: String): List<Quiz> {
+        return quizDao.findAllByCreatedByUsername(username)
     }
 
     override fun findQuizById(id: Int): Quiz {

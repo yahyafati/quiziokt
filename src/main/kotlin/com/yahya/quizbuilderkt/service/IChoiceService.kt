@@ -1,6 +1,7 @@
 package com.yahya.quizbuilderkt.service
 
 import com.yahya.quizbuilderkt.model.Choice
+import org.springframework.security.access.AccessDeniedException
 
 interface IChoiceService {
 
@@ -14,11 +15,15 @@ interface IChoiceService {
 
     fun save(choice: Choice): Choice
 
+    @kotlin.jvm.Throws(AccessDeniedException::class)
     fun saveAll(choices: List<Choice>, replace: Boolean): List<Choice>
 
+    @kotlin.jvm.Throws(AccessDeniedException::class)
     fun update(choice: Choice): Choice
 
+    @kotlin.jvm.Throws(AccessDeniedException::class)
     fun delete(id: Int)
     fun deleteByQuestionAndId(questionId: Int, choiceId: Int)
+    fun getChoicesByQuestionIdAndUsername(questionId: Int, currentUsername: String): List<Choice>
 
 }

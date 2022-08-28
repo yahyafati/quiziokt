@@ -5,12 +5,18 @@ import com.yahya.quizbuilderkt.exception.InvalidQuestionException
 import com.yahya.quizbuilderkt.exception.ResourceNotFoundException
 import com.yahya.quizbuilderkt.model.Choice
 import com.yahya.quizbuilderkt.model.Question
+import com.yahya.quizbuilderkt.security.IAuthenticationFacade
 import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionService) : IChoiceService {
+class ChoiceService(
+    val choiceDao: ChoiceDao,
+    val questionService: IQuestionService,
+    val authenticationFacade: IAuthenticationFacade
+) : IChoiceService {
 
     override fun findChoices(): List<Choice> {
         return choiceDao.findAll()
@@ -65,6 +71,9 @@ class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionServ
         }
         val questionId = choices[0].question?.id ?: throw IllegalArgumentException("no question provided")
         val question = questionService.findQuestionById(questionId)
+        if (!authenticationFacade.equalsAuth(question)) {
+            throw AccessDeniedException("can't access this question")
+        }
         if (replace) {
             choiceDao.deleteAllByQuestionId(questionId)
         }
@@ -84,15 +93,27 @@ class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionServ
         return choiceDao.saveAll(choices)
     }
 
+    @kotlin.jvm.Throws(AccessDeniedException::class)
     override fun update(choice: Choice): Choice {
-        val exists =
-            choiceDao.findById(choice.id).orElseThrow { ResourceNotFoundException.createWith("choice", choice.id) }
-        choice.question = Question(id = exists.id)
+        val exists = checkChoiceValidAuth(choice.id)
+        choice.question = exists.question
         return save(choice)
     }
 
+    @kotlin.jvm.Throws(AccessDeniedException::class)
+    private fun checkChoiceValidAuth(id: Int): Choice {
+        val exists =
+            choiceDao.findById(id).orElseThrow { ResourceNotFoundException.createWith("choice", id) }
+        if (authenticationFacade.equalsAuth(exists.question)) {
+            throw AccessDeniedException("can't access this quiz")
+        }
+        return exists
+    }
+
+    @kotlin.jvm.Throws(AccessDeniedException::class)
     override fun delete(id: Int) {
         try {
+            checkChoiceValidAuth(id)
             choiceDao.deleteById(id)
         } catch (e: EmptyResultDataAccessException) {
             throw ResourceNotFoundException.createWith("choice", id)
@@ -105,6 +126,10 @@ class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionServ
         } catch (e: EmptyResultDataAccessException) {
             throw ResourceNotFoundException("no choice exists with the given question id ($questionId) and choice id ($choiceId)")
         }
+    }
+
+    override fun getChoicesByQuestionIdAndUsername(questionId: Int, currentUsername: String): List<Choice> {
+        return choiceDao.findAllByQuestionIdAndQuestionCreatedByUsername(questionId, currentUsername)
     }
 
 }

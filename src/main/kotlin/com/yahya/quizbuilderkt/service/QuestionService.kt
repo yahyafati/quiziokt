@@ -71,4 +71,8 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
         }
     }
 
+    override fun findQuestionsByQuizIdAndUsername(quiz: Int, username: String): List<Question> {
+        return questionDao.findAllByQuizIdAndQuizCreatedByUsername(quiz, username)
+    }
+
 }

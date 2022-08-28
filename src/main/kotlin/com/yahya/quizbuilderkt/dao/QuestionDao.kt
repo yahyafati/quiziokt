@@ -8,6 +8,7 @@ import java.util.*
 
 interface QuestionDao : JpaRepository<Question, Int> {
     fun findAllByQuizId(id: Int): List<Question>
+    fun findAllByQuizIdAndQuizCreatedByUsername(id: Int, username: String): List<Question>
     fun findByQuizAndId(quiz: Quiz, id: Int): Optional<Question>
     fun deleteByQuizAndId(quiz: Quiz, questionId: Int)
 

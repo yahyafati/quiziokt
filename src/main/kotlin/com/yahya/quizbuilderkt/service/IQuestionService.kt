@@ -20,4 +20,5 @@ interface IQuestionService {
 
     fun delete(id: Int)
     fun deleteByQuizAndId(quizId: Int, questionId: Int)
+    fun findQuestionsByQuizIdAndUsername(quiz: Int, username: String): List<Question>
 }

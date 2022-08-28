@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -25,7 +26,8 @@ class GlobalExceptionHandler {
         MethodArgumentNotValidException::class,
         MissingServletRequestParameterException::class,
         InvalidQuestionException::class,
-        UsernameTakenException::class
+        UsernameTakenException::class,
+        AccessDeniedException::class
     )
     fun handleException(ex: Exception, request: WebRequest): ResponseEntity<ErrorResponse> {
         val headers = HttpHeaders()
@@ -48,6 +50,11 @@ class GlobalExceptionHandler {
                 val status = HttpStatus.BAD_REQUEST
                 handleInvalidQuestionException(ex, headers, status)
             }
+            is AccessDeniedException -> {
+                LOG.warn("{}: {}", ex.javaClass.name, ex.message)
+                val status = HttpStatus.FORBIDDEN
+                handleAccessDeniedException(ex, headers, status)
+            }
 //            is MissingServletRequestParameterException -> {
 //                val status = HttpStatus.BAD_REQUEST
 //                handleMissingServletRequestParameterException(ex, headers, status)
@@ -63,6 +70,14 @@ class GlobalExceptionHandler {
                 handleExceptionInternal(ex, ErrorResponse(ex.message), headers, status, request)
             }
         }
+    }
+
+    private fun handleAccessDeniedException(
+        ex: AccessDeniedException,
+        headers: HttpHeaders,
+        status: HttpStatus
+    ): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(status).headers(headers).body(ErrorResponse(ex.message, exception = ex))
     }
 
     private fun handleUsernameTakenException(

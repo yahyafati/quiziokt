@@ -2,18 +2,29 @@ package com.yahya.quizbuilderkt.controller
 
 import com.yahya.quizbuilderkt.model.Choice
 import com.yahya.quizbuilderkt.model.Question
+import com.yahya.quizbuilderkt.security.IAuthenticationFacade
 import com.yahya.quizbuilderkt.service.IChoiceService
+import com.yahya.quizbuilderkt.service.IQuestionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1/choice")
-class ChoiceController(private val choiceService: IChoiceService) {
+class ChoiceController(
+    private val choiceService: IChoiceService,
+    private val questionService: IQuestionService,
+    private val authenticationFacade: IAuthenticationFacade
+) {
+
+    private fun getCurrentUsername(): String = authenticationFacade.authentication?.name!!
+
+    private fun checkAccessPrivilege(choice: Choice): Boolean =
+        choice.question?.createdBy?.username.equals(getCurrentUsername(), ignoreCase = true)
 
     @GetMapping("")
     fun getAll(@RequestParam(name = "question") questionId: Int): ResponseEntity<Any> {
-        val choicesByQuestionId = choiceService.getChoicesByQuestionId(questionId)
+        val choicesByQuestionId = choiceService.getChoicesByQuestionIdAndUsername(questionId, getCurrentUsername())
         return ResponseEntity.ok(choicesByQuestionId)
     }
 
@@ -34,6 +45,9 @@ class ChoiceController(private val choiceService: IChoiceService) {
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: Int): ResponseEntity<Any> {
         val choice = choiceService.findChoiceById(id)
+        if (!authenticationFacade.equalsAuth(choice.question)) {
+            throw org.springframework.security.access.AccessDeniedException("can't access this quiz")
+        }
         return ResponseEntity.ok(choice)
     }
 
