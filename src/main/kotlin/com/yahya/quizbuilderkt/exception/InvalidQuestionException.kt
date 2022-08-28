@@ -10,8 +10,12 @@ class InvalidQuestionException(override val message: String = "", val status: Ht
             return InvalidQuestionException("no answer provided")
         }
 
+        fun questionHadMultipleAnswer(): InvalidQuestionException {
+            return InvalidQuestionException("question has multiple answers")
+        }
+
         fun multipleAnswerProvided(): InvalidQuestionException {
-            return InvalidQuestionException("more than one answer provided for a single answer question")
+            return InvalidQuestionException("more than one answer provided for a single-answer question")
         }
 
         fun noChoiceProvided(): InvalidQuestionException {

@@ -46,6 +46,6 @@ class WebConfig(val appProperties: AppProperties) : WebMvcConfigurer {
         LOG.info("showStackTrace: {}", showStackTrace)
         val except: Set<String> = if (showStackTrace) setOf() else setOf("stacktrace")
         val filter: SimpleBeanPropertyFilter = SimpleBeanPropertyFilter.serializeAllExcept(except)
-        return SimpleFilterProvider().addFilter("errorFilter", filter)
+        return SimpleFilterProvider().addFilter("errorFilter", filter).setFailOnUnknownId(false)
     }
 }

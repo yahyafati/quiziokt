@@ -33,9 +33,27 @@ class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionServ
         return choiceDao.findAllByQuestionId(questionId)
     }
 
+    private fun validateChoices(choices: List<Choice>, question: Question) {
+        val numberOfAnswers = choices.count { it.answer }
+        if (numberOfAnswers == 0) {
+            // Check if it has any answer
+            throw InvalidQuestionException.noAnswerProvided()
+        } else if (numberOfAnswers > 1 && !question.multi) {
+            // Check the number of answers
+            throw InvalidQuestionException.multipleAnswerProvided()
+        }
+    }
+
     override fun save(choice: Choice): Choice {
         val question: Question = choice.question ?: throw IllegalArgumentException("no question provided")
-        choice.question = questionService.findQuestionById(question.id)
+        val questionFromDB = questionService.findQuestionById(question.id)
+        val choices = mutableListOf<Choice>()
+
+        choices.addAll(choiceDao.findAllByQuestionId(questionId = questionFromDB.id))
+        choices.removeIf { it.id == choice.id }
+        choices.add(choice)
+
+        validateChoices(choices, questionFromDB)
         return choiceDao.save(choice)
 
     }
@@ -57,21 +75,12 @@ class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionServ
                 list.addAll(choices)
                 return list
             }
-
         val anyConflict = choices.any { it.question?.id != questionId }
         if (anyConflict) {
             throw IllegalArgumentException("all choices must be for the same question")
         }
+        validateChoices(allChoices, question)
 
-
-        val numberOfAnswers = allChoices.count { it.answer }
-        if (numberOfAnswers == 0) {
-            // Check if it has any answer
-            throw InvalidQuestionException.noAnswerProvided()
-        } else if (numberOfAnswers > 1 && !question.multi) {
-            // Check the number of answers
-            throw InvalidQuestionException.multipleAnswerProvided()
-        }
         return choiceDao.saveAll(choices)
     }
 

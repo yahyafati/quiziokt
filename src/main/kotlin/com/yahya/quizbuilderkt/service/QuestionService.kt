@@ -1,6 +1,7 @@
 package com.yahya.quizbuilderkt.service
 
 import com.yahya.quizbuilderkt.dao.QuestionDao
+import com.yahya.quizbuilderkt.exception.InvalidQuestionException
 import com.yahya.quizbuilderkt.exception.ResourceNotFoundException
 import com.yahya.quizbuilderkt.model.Question
 import com.yahya.quizbuilderkt.model.Quiz
@@ -38,10 +39,15 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
     }
 
     override fun update(question: Question): Question {
-        val exists = questionDao.existsById(question.id)
-        if (!exists) {
-            throw ResourceNotFoundException.createWith("question", question.id)
+        val questionById = findQuestionById(question.id)
+        val quiz = questionById.quiz ?: throw IllegalArgumentException("no quiz provided")
+        if (questionById.multi != question.multi && !question.multi) {
+            val count = questionDao.countAllAnswers(question.id)
+            if (count > 1) {
+                throw InvalidQuestionException.questionHadMultipleAnswer()
+            }
         }
+        question.quiz = Quiz(id = quiz.id)
         return save(question)
     }
 
