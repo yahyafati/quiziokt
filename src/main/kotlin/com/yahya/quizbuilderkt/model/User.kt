@@ -18,9 +18,10 @@ import javax.validation.constraints.Size
 
 @Entity
 @EntityListeners(AuditingEntityListener::class)
-@JsonFilter("userFilter")
+@JsonFilter("UserFilter")
 class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     var id: Int = 0,
 
     @Column(unique = true)
@@ -61,6 +62,7 @@ class User(
         return "User(id=$id)"
     }
 
+    @JsonIgnore
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf()
     }

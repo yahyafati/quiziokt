@@ -11,8 +11,9 @@ import javax.validation.Valid
 class QuizController(val quizService: IQuizService) {
 
     @GetMapping("")
-    fun getAll(): List<Quiz> {
-        return quizService.findQuizzes()
+    fun getAll(): ResponseEntity<Any> {
+        val quizzes = quizService.findQuizzes()
+        return ResponseEntity.ok(quizzes)
     }
 
     @GetMapping("/{id}")
@@ -22,9 +23,10 @@ class QuizController(val quizService: IQuizService) {
     }
 
     @PostMapping("")
-    fun post(@RequestBody @Valid quiz: Quiz): Quiz {
+    fun post(@RequestBody @Valid quiz: Quiz): ResponseEntity<Any> {
         quiz.id = 0
-        return quizService.save(quiz)
+        val saved = quizService.save(quiz)
+        return ResponseEntity.ok(saved)
     }
 
     @PutMapping("/{id}")

@@ -1,6 +1,5 @@
 package com.yahya.quizbuilderkt.config
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.ser.FilterProvider
@@ -34,7 +33,7 @@ class WebConfig(val appProperties: AppProperties) : WebMvcConfigurer {
             .dateFormat(SimpleDateFormat("yyyy-MM-dd HH:mm"))
             .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .build()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+//        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
         val converter = MappingJackson2HttpMessageConverter(mapper)
         converters.add(converter)
