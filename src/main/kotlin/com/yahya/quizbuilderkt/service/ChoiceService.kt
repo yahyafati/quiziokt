@@ -32,10 +32,22 @@ class ChoiceService(val choiceDao: ChoiceDao, val questionService: IQuestionServ
     }
 
     override fun save(choice: Choice): Choice {
-        val question: Question = choice.question ?: throw ResourceNotFoundException("no question provided")
+        val question: Question = choice.question ?: throw IllegalArgumentException("no question provided")
         choice.question = questionService.findQuestionById(question.id)
         return choiceDao.save(choice)
 
+    }
+
+    override fun saveAll(choices: List<Choice>): List<Choice> {
+        if (choices.isEmpty()) {
+            return choices
+        }
+        val questionId = choices[0].question?.id ?: throw IllegalArgumentException("no question provided")
+        val anyConflict = choices.any { it.question?.id != questionId }
+        if (anyConflict) {
+            throw IllegalArgumentException("all choices must be for the same question")
+        }
+        return choiceDao.saveAll(choices)
     }
 
     override fun update(choice: Choice): Choice {
