@@ -21,7 +21,7 @@ interface IAuthenticationFacade {
     }
 
     fun equalsAuth(auditable: Auditable?): Boolean {
-        return equalsAuth(auditable?.createdBy!!)
+        return equalsAuth(auditable?.createdBy)
     }
 
     val authentication: Authentication?
