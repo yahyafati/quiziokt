@@ -17,11 +17,16 @@ class SecurityAuditorAware(private val authenticationFacade: IAuthenticationFaca
     }
 
     override fun getCurrentAuditor(): Optional<User> {
+//        val name = authenticationFacade.authentication?.name ?: return Optional.empty()
+//        return Optional.of<String>(name)
         val authentication = authenticationFacade.authentication ?: return Optional.empty()
         val isAnonymous = authentication.authorities.isNotEmpty() && authentication.authorities.stream()
             .allMatch { grantedAuthority: GrantedAuthority -> grantedAuthority.authority == "ROLE_ANONYMOUS" }
         return if (!authentication.isAuthenticated || isAnonymous) {
             Optional.empty()
-        } else Optional.of(userService.findByUsername(authentication.name))
+        } else {
+            val user = userService.findByUsername(authentication.name)
+            Optional.of(user)
+        }
     }
 }

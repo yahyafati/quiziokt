@@ -18,15 +18,9 @@ class QuestionController(
     private val authenticationFacade: IAuthenticationFacade
 ) {
 
-    private fun getCurrentUsername(): String = authenticationFacade.authentication?.name!!
-
-    private fun checkAccessPrivilege(question: Question): Boolean =
-        question.createdBy?.username.equals(getCurrentUsername(), ignoreCase = true)
-
-
     @GetMapping("")
     fun getAll(@RequestParam quiz: Int): ResponseEntity<Any> {
-        val questions = questionService.findQuestionsByQuizIdAndUsername(quiz, getCurrentUsername())
+        val questions = questionService.findQuestionsByQuizIdAndUsername(quiz, authenticationFacade.username)
         val value = Util.applyFilterOut(questions, "QuestionFilter", "id", "text", "multi")
         return ResponseEntity.ok(value)
     }
@@ -34,7 +28,7 @@ class QuestionController(
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: Int): ResponseEntity<Any> {
         val question = questionService.findQuestionById(id)
-        if (!checkAccessPrivilege(question)) {
+        if (!authenticationFacade.equalsAuth(question)) {
             throw org.springframework.security.access.AccessDeniedException("can't access this quiz")
         }
         return ResponseEntity.ok(question)
@@ -42,7 +36,7 @@ class QuestionController(
 
     @PostMapping("")
     fun post(@RequestBody @Valid item: Question, @RequestParam(name = "quiz") quizId: Int): ResponseEntity<Any> {
-        if (!quizService.findQuizById(quizId).createdBy?.username.equals(getCurrentUsername(), ignoreCase = true)) {
+        if (!authenticationFacade.equalsAuth(quizService.findQuizById(quizId))) {
             throw org.springframework.security.access.AccessDeniedException("can't access this quiz")
         }
         item.quiz = Quiz(id = quizId)
@@ -54,7 +48,7 @@ class QuestionController(
     fun update(@PathVariable id: Int, @RequestBody @Valid item: Question): ResponseEntity<Any> {
         item.id = id
         val existing = questionService.findQuestionById(id)
-        if (!checkAccessPrivilege(existing)) {
+        if (!authenticationFacade.equalsAuth(existing)) {
             throw org.springframework.security.access.AccessDeniedException("can't access this quiz")
         }
         val updated = questionService.update(item)
@@ -64,7 +58,7 @@ class QuestionController(
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Int): ResponseEntity<Any> {
         val existing = questionService.findQuestionById(id)
-        if (!checkAccessPrivilege(existing)) {
+        if (!authenticationFacade.equalsAuth(existing)) {
             throw org.springframework.security.access.AccessDeniedException("can't access this quiz")
         }
         questionService.delete(id)

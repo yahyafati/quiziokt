@@ -24,6 +24,13 @@ open class Auditable(
     @JsonIgnore
     var lastModifiedBy: User? = null,
 
+//    @CreatedBy
+//    @JsonIgnore
+//    var createdBy: String? = null,
+//    @LastModifiedBy
+//    @JsonIgnore
+//    var lastModifiedBy: String? = null,
+
     @CreatedDate
     @Column(updatable = false)
     var createdAt: Timestamp? = null,
@@ -39,7 +46,7 @@ open class Auditable(
 
     @JsonProperty("lastModifiedBy")
     @Transient
-    fun getLastModifiedBy(): String? {
+    fun getLastModifier(): String? {
         return this.lastModifiedBy?.username
     }
 }

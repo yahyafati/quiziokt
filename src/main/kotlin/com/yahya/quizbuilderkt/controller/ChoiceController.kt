@@ -17,14 +17,10 @@ class ChoiceController(
     private val authenticationFacade: IAuthenticationFacade
 ) {
 
-    private fun getCurrentUsername(): String = authenticationFacade.authentication?.name!!
-
-    private fun checkAccessPrivilege(choice: Choice): Boolean =
-        choice.question?.createdBy?.username.equals(getCurrentUsername(), ignoreCase = true)
-
     @GetMapping("")
     fun getAll(@RequestParam(name = "question") questionId: Int): ResponseEntity<Any> {
-        val choicesByQuestionId = choiceService.getChoicesByQuestionIdAndUsername(questionId, getCurrentUsername())
+        val choicesByQuestionId =
+            choiceService.getChoicesByQuestionIdAndUsername(questionId, authenticationFacade.username)
         return ResponseEntity.ok(choicesByQuestionId)
     }
 
