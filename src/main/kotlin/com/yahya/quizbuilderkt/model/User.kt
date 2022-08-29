@@ -25,27 +25,7 @@ class User(
     @JsonIgnore
     var id: Int = 0,
 
-    @Column(unique = true)
-    @field:NotBlank
-    @JvmField
-    var username: String,
-
-    @field:Email
-    @Column(unique = true)
-    var email: String,
-
-    @field:NotBlank
-    @field:Size(min = 8, message = "Password must be at least 8 characters long")
-    @field:Pattern(
-        regexp = SecurityConstants.PASSWORD_REGEX,
-        message = "Password must have at least one uppercase, one lowercase, one number character"
-    )
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @JvmField
-    var password: String,
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE], mappedBy = "user")
     @JsonIgnore
     private var profile: UserProfile? = null,
 
@@ -54,6 +34,25 @@ class User(
     @LastModifiedDate
     var updateTime: Timestamp? = null
 ) : UserDetails {
+
+    @Column(unique = true)
+    @field:NotBlank
+    @JvmField
+    var username: String = ""
+
+    @field:Email
+    @Column(unique = true)
+    var email: String = ""
+
+    @field:NotBlank
+    @field:Size(min = 8, message = "Password must be at least 8 characters long")
+    @field:Pattern(
+        regexp = SecurityConstants.PASSWORD_REGEX,
+        message = "Password must have at least one uppercase, one lowercase, one number character"
+    )
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JvmField
+    var password: String = ""
 
     //    var version: Int = 0
     @JsonIgnore

@@ -17,7 +17,7 @@ interface IAuthenticationFacade {
     }
 
     fun equalsAuth(user: User?): Boolean {
-        return equals(user!!.username, username)
+        return equals(user?.username!!, username)
     }
 
     fun equalsAuth(auditable: Auditable?): Boolean {
