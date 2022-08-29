@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.sql.Timestamp
 import javax.persistence.*
+import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
@@ -29,15 +30,24 @@ class User(
     @JvmField
     var username: String,
 
+    @field:Email
+    @Column(unique = true)
+    var email: String,
+
     @field:NotBlank
     @field:Size(min = 8, message = "Password must be at least 8 characters long")
     @field:Pattern(
         regexp = SecurityConstants.PASSWORD_REGEX,
         message = "Password must have at least one uppercase, one lowercase, one number character"
     )
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JvmField
     var password: String,
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
+    @JsonIgnore
+    private var profile: UserProfile? = null,
 
     @CreatedDate
     var creationTime: Timestamp? = null,
