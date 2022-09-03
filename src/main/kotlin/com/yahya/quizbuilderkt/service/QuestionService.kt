@@ -48,12 +48,13 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
     }
 
     override fun update(question: Question): Question {
-        val questionById = findQuestionById(question.id)
-        val quiz = questionById.quiz ?: throw IllegalArgumentException("no quiz provided")
-        if (questionById.multi != question.multi && !question.multi) {
+        val oldQuestion = findQuestionById(question.id)
+        val quiz = oldQuestion.quiz ?: throw IllegalArgumentException("no quiz provided")
+        val multiStatusChanged = oldQuestion.multi != question.multi
+        if (multiStatusChanged && !question.multi) {
             val count = questionDao.countAllAnswers(question.id)
             if (count > 1) {
-                throw InvalidQuestionException.questionHadMultipleAnswer()
+                throw InvalidQuestionException.questionHadMultipleAnswer(question.choices)
             }
         }
         question.quiz = Quiz(id = quiz.id)

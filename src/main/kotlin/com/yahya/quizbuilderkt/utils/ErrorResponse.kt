@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 @JsonFilter("errorFilter")
 data class ErrorResponse(
     val error: String? = "There was something wrong",
-    val details: Map<String, String>? = null,
+    val details: Map<String, Any>? = null,
     @JsonIgnore
     private val exception: java.lang.Exception? = null,
     val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),

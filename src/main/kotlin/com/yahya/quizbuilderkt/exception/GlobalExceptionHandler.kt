@@ -107,7 +107,8 @@ class GlobalExceptionHandler {
         headers: HttpHeaders,
         status: HttpStatus
     ): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(status).headers(headers).body(ErrorResponse(ex.message, exception = ex))
+        return ResponseEntity.status(status).headers(headers)
+            .body(ErrorResponse(ex.message, details = hashMapOf("currentChoices" to ex.currentChoices), exception = ex))
     }
 
     private fun handleMissingServletRequestParameterException(

@@ -20,7 +20,7 @@ class Question(
     var quiz: Quiz? = null,
     @OneToMany(mappedBy = "question", cascade = [CascadeType.REMOVE])
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    var choices: List<Choice>? = null
+    var choices: List<Choice> = emptyList()
 ) : Auditable(), IModel {
     override fun toString(): String {
         return "Question(id=$id, text=$text, multi=$multi, quiz=$quiz, choices=${choices?.size})"

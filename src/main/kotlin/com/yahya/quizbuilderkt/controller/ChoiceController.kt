@@ -4,7 +4,6 @@ import com.yahya.quizbuilderkt.model.Choice
 import com.yahya.quizbuilderkt.model.Question
 import com.yahya.quizbuilderkt.security.IAuthenticationFacade
 import com.yahya.quizbuilderkt.service.IChoiceService
-import com.yahya.quizbuilderkt.service.IQuestionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
@@ -13,7 +12,6 @@ import javax.validation.Valid
 @RequestMapping("/api/v1/choice")
 class ChoiceController(
     private val choiceService: IChoiceService,
-    private val questionService: IQuestionService,
     private val authenticationFacade: IAuthenticationFacade
 ) {
 
@@ -28,13 +26,13 @@ class ChoiceController(
     fun post(
         @Valid @RequestBody items: List<Choice>,
         @RequestParam(name = "question") questionId: Int,
-//        @RequestParam(defaultValue = "true") replace: Boolean
+        @RequestParam(defaultValue = "true") replace: Boolean
     ): ResponseEntity<Any> {
         items.forEach {
             it.id = 0
             it.question = Question(id = questionId)
         }
-        val saved = choiceService.saveAll(items, true)
+        val saved = choiceService.saveAll(items, replace)
         return ResponseEntity.ok(saved)
     }
 

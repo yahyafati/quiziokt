@@ -13,8 +13,8 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/api/v1/question")
 class QuestionController(
-    val questionService: IQuestionService,
-    val quizService: IQuizService,
+    private val questionService: IQuestionService,
+    private val quizService: IQuizService,
     private val authenticationFacade: IAuthenticationFacade
 ) {
 

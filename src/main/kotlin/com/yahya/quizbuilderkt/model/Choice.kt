@@ -15,7 +15,7 @@ class Choice(
     @Column(nullable = false)
     var text: String = "",
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     var answer: Boolean = false,
 
     @ManyToOne

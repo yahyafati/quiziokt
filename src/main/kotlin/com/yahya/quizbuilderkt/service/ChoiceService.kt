@@ -40,14 +40,26 @@ class ChoiceService(
         return choiceDao.findAllByQuestionId(questionId)
     }
 
-    private fun validateChoices(choices: List<Choice>, question: Question) {
-        val numberOfAnswers = choices.count { it.answer }
+    private fun validateChoices(
+        savedChoices: List<Choice>,
+        newChoices: List<Choice>,
+        question: Question,
+        newChoice: Choice? = null
+    ) {
+        val allOptions = mutableListOf<Choice>()
+        allOptions.addAll(savedChoices)
+        allOptions.addAll(newChoices)
+        if (newChoice != null) {
+            allOptions.removeIf { it.id == newChoice.id }
+            allOptions.add(newChoice)
+        }
+        val numberOfAnswers = allOptions.count { it.answer }
         if (numberOfAnswers == 0) {
             // Check if it has any answer
-            throw InvalidQuestionException.noAnswerProvided()
+            throw InvalidQuestionException.noAnswerProvided(savedChoices)
         } else if (numberOfAnswers > 1 && !question.multi) {
             // Check the number of answers
-            throw InvalidQuestionException.multipleAnswerProvided()
+            throw InvalidQuestionException.multipleAnswerProvided(savedChoices)
         }
     }
 
@@ -58,13 +70,13 @@ class ChoiceService(
         if (quiz.published) {
             throw QuizAlreadyPublished.createWith((quiz.id))
         }
-        val choices = mutableListOf<Choice>()
-
-        choices.addAll(choiceDao.findAllByQuestionId(questionId = questionFromDB.id))
-        choices.removeIf { it.id == choice.id }
-        choices.add(choice)
-
-        validateChoices(choices, questionFromDB)
+//        val choices = mutableListOf<Choice>()
+//
+//        choices.addAll(choiceDao.findAllByQuestionId(questionId = questionFromDB.id))
+//        choices.removeIf { it.id == choice.id }
+//        choices.add(choice)
+        val choices = choiceDao.findAllByQuestionId(questionId = questionFromDB.id)
+        validateChoices(choices, emptyList(), questionFromDB, newChoice = choice)
         return choiceDao.save(choice)
 
     }
@@ -86,18 +98,22 @@ class ChoiceService(
         if (replace) {
             choiceDao.deleteAllByQuestionId(questionId)
         }
-        val allChoices: List<Choice> =
-            if (replace) choices else {
-                val list = mutableListOf<Choice>()
-                list.addAll(choiceDao.findAllByQuestionId(questionId))
-                list.addAll(choices)
-                return list
-            }
+//        val allChoices: List<Choice> =
+//            if (replace) choices else {
+//                val list = mutableListOf<Choice>()
+//                list.addAll(choiceDao.findAllByQuestionId(questionId))
+//                list.addAll(choices)
+//                list
+//            }
         val anyConflict = choices.any { it.question?.id != questionId }
         if (anyConflict) {
             throw IllegalArgumentException("all choices must be for the same question")
         }
-        validateChoices(allChoices, question)
+        if (replace) {
+            validateChoices(emptyList(), choices, question)
+        } else {
+            validateChoices(choiceDao.findAllByQuestionId(questionId), choices, question)
+        }
 
         return choiceDao.saveAll(choices)
     }
