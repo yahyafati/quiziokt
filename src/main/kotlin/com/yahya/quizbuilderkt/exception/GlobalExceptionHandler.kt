@@ -28,7 +28,8 @@ class GlobalExceptionHandler {
         InvalidQuestionException::class,
         UsernameTakenException::class,
         AccessDeniedException::class,
-        QuizAlreadyPublished::class
+        QuizAlreadyPublishedException::class,
+        QuizPublishingException::class
     )
     fun handleException(ex: Exception, request: WebRequest): ResponseEntity<ErrorResponse> {
         val headers = HttpHeaders()
@@ -65,10 +66,15 @@ class GlobalExceptionHandler {
                 val status = HttpStatus.BAD_REQUEST
                 handleUsernameTakenException(ex, headers, status)
             }
-            is QuizAlreadyPublished -> {
+            is QuizAlreadyPublishedException -> {
                 LOG.warn("{} {}", ex.javaClass.name, ex.message)
                 val status = HttpStatus.CONFLICT
                 handleQuizAlreadyPublished(ex, headers, status)
+            }
+            is QuizPublishingException -> {
+                LOG.warn("{} {}", ex.javaClass.name, ex.message)
+                val status = HttpStatus.CONFLICT
+                handleQuizPublishingException(ex, headers, status)
             }
             else -> {
                 LOG.error("{} {}", ex.javaClass.name, ex.message)
@@ -78,8 +84,20 @@ class GlobalExceptionHandler {
         }
     }
 
+    private fun handleQuizPublishingException(
+        ex: QuizPublishingException,
+        headers: HttpHeaders,
+        status: HttpStatus
+    ): ResponseEntity<ErrorResponse> {
+        val invalidsMap: HashMap<String, Any> = hashMapOf("invalids" to ex.validations)
+        return ResponseEntity
+            .status(status)
+            .headers(headers)
+            .body(ErrorResponse(ex.message, exception = ex, details = invalidsMap))
+    }
+
     private fun handleQuizAlreadyPublished(
-        ex: QuizAlreadyPublished,
+        ex: QuizAlreadyPublishedException,
         headers: HttpHeaders,
         status: HttpStatus
     ): ResponseEntity<ErrorResponse> {

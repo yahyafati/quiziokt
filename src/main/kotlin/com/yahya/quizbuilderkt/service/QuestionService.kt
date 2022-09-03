@@ -2,7 +2,7 @@ package com.yahya.quizbuilderkt.service
 
 import com.yahya.quizbuilderkt.dao.QuestionDao
 import com.yahya.quizbuilderkt.exception.InvalidQuestionException
-import com.yahya.quizbuilderkt.exception.QuizAlreadyPublished
+import com.yahya.quizbuilderkt.exception.QuizAlreadyPublishedException
 import com.yahya.quizbuilderkt.exception.ResourceNotFoundException
 import com.yahya.quizbuilderkt.model.Question
 import com.yahya.quizbuilderkt.model.Quiz
@@ -42,7 +42,7 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
         val quizFromDB = quizService.findQuizById(quiz.id)
         question.quiz = quizFromDB
         if (quizFromDB.published) {
-            throw QuizAlreadyPublished.createWith(quiz.id)
+            throw QuizAlreadyPublishedException.createWith(quiz.id)
         }
         return questionDao.save(question)
     }

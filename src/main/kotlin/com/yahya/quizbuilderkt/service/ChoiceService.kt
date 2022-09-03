@@ -2,11 +2,12 @@ package com.yahya.quizbuilderkt.service
 
 import com.yahya.quizbuilderkt.dao.ChoiceDao
 import com.yahya.quizbuilderkt.exception.InvalidQuestionException
-import com.yahya.quizbuilderkt.exception.QuizAlreadyPublished
+import com.yahya.quizbuilderkt.exception.QuizAlreadyPublishedException
 import com.yahya.quizbuilderkt.exception.ResourceNotFoundException
 import com.yahya.quizbuilderkt.model.Choice
 import com.yahya.quizbuilderkt.model.Question
 import com.yahya.quizbuilderkt.security.IAuthenticationFacade
+import com.yahya.quizbuilderkt.utils.InvalidQuestionExceptionType
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
@@ -18,6 +19,38 @@ class ChoiceService(
     val questionService: IQuestionService,
     val authenticationFacade: IAuthenticationFacade
 ) : IChoiceService {
+
+    companion object {
+        fun validateChoices(
+            savedChoices: List<Choice>,
+            newChoices: List<Choice>,
+            question: Question,
+            newChoice: Choice? = null
+        ): InvalidQuestionExceptionType {
+            val allOptions = mutableListOf<Choice>()
+            allOptions.addAll(savedChoices)
+            allOptions.addAll(newChoices)
+            if (newChoice != null) {
+                allOptions.removeIf { it.id == newChoice.id }
+                allOptions.add(newChoice)
+            }
+            val numberOfAnswers = allOptions.count { it.answer }
+            if (allOptions.isEmpty()) {
+//            throw InvalidQuestionException.noChoiceProvided()
+                return InvalidQuestionExceptionType.NO_CHOICE_PROVIDED
+            }
+            if (numberOfAnswers == 0) {
+                // Check if it has any answer
+//            throw InvalidQuestionException.noAnswerProvided(savedChoices)
+                return InvalidQuestionExceptionType.NO_ANSWER_PROVIDED
+            } else if (numberOfAnswers > 1 && !question.multi) {
+                // Check the number of answers
+//            throw InvalidQuestionException.multipleAnswerProvided(savedChoices)
+                return InvalidQuestionExceptionType.MULTIPLE_ANSWER_PROVIDED
+            }
+            return InvalidQuestionExceptionType.VALID_QUESTION
+        }
+    }
 
     override fun findChoices(): List<Choice> {
         return choiceDao.findAll()
@@ -40,35 +73,13 @@ class ChoiceService(
         return choiceDao.findAllByQuestionId(questionId)
     }
 
-    private fun validateChoices(
-        savedChoices: List<Choice>,
-        newChoices: List<Choice>,
-        question: Question,
-        newChoice: Choice? = null
-    ) {
-        val allOptions = mutableListOf<Choice>()
-        allOptions.addAll(savedChoices)
-        allOptions.addAll(newChoices)
-        if (newChoice != null) {
-            allOptions.removeIf { it.id == newChoice.id }
-            allOptions.add(newChoice)
-        }
-        val numberOfAnswers = allOptions.count { it.answer }
-        if (numberOfAnswers == 0) {
-            // Check if it has any answer
-            throw InvalidQuestionException.noAnswerProvided(savedChoices)
-        } else if (numberOfAnswers > 1 && !question.multi) {
-            // Check the number of answers
-            throw InvalidQuestionException.multipleAnswerProvided(savedChoices)
-        }
-    }
 
     override fun save(choice: Choice): Choice {
         val question: Question = choice.question ?: throw IllegalArgumentException("no question provided")
         val questionFromDB = questionService.findQuestionById(question.id)
         val quiz = question.quiz ?: throw IllegalArgumentException("quiz is null")
         if (quiz.published) {
-            throw QuizAlreadyPublished.createWith((quiz.id))
+            throw QuizAlreadyPublishedException.createWith((quiz.id))
         }
 //        val choices = mutableListOf<Choice>()
 //
@@ -76,7 +87,10 @@ class ChoiceService(
 //        choices.removeIf { it.id == choice.id }
 //        choices.add(choice)
         val choices = choiceDao.findAllByQuestionId(questionId = questionFromDB.id)
-        validateChoices(choices, emptyList(), questionFromDB, newChoice = choice)
+        val validation = validateChoices(choices, emptyList(), questionFromDB, newChoice = choice)
+        if (validation != InvalidQuestionExceptionType.VALID_QUESTION) {
+            throw InvalidQuestionException.typeToException(validation, choices)!!
+        }
         return choiceDao.save(choice)
 
     }
@@ -90,7 +104,7 @@ class ChoiceService(
         val question = questionService.findQuestionById(questionId)
         val quiz = question.quiz ?: throw IllegalArgumentException("quiz is null")
         if (quiz.published) {
-            throw QuizAlreadyPublished.createWith(quiz.id)
+            throw QuizAlreadyPublishedException.createWith(quiz.id)
         }
         if (!authenticationFacade.equalsAuth(question)) {
             throw AccessDeniedException("can't access this question")
@@ -98,23 +112,20 @@ class ChoiceService(
         if (replace) {
             choiceDao.deleteAllByQuestionId(questionId)
         }
-//        val allChoices: List<Choice> =
-//            if (replace) choices else {
-//                val list = mutableListOf<Choice>()
-//                list.addAll(choiceDao.findAllByQuestionId(questionId))
-//                list.addAll(choices)
-//                list
-//            }
         val anyConflict = choices.any { it.question?.id != questionId }
         if (anyConflict) {
             throw IllegalArgumentException("all choices must be for the same question")
         }
-        if (replace) {
+        val alreadyChoices = if (!replace) choiceDao.findAllByQuestionId(questionId) else emptyList()
+        val validation = if (replace) {
             validateChoices(emptyList(), choices, question)
         } else {
-            validateChoices(choiceDao.findAllByQuestionId(questionId), choices, question)
+            validateChoices(alreadyChoices, choices, question)
         }
 
+        if (validation != InvalidQuestionExceptionType.VALID_QUESTION) {
+            throw InvalidQuestionException.typeToException(validation, alreadyChoices)!!
+        }
         return choiceDao.saveAll(choices)
     }
 

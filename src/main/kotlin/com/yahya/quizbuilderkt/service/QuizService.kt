@@ -1,9 +1,11 @@
 package com.yahya.quizbuilderkt.service
 
 import com.yahya.quizbuilderkt.dao.QuizDao
-import com.yahya.quizbuilderkt.exception.QuizAlreadyPublished
+import com.yahya.quizbuilderkt.exception.QuizAlreadyPublishedException
+import com.yahya.quizbuilderkt.exception.QuizPublishingException
 import com.yahya.quizbuilderkt.exception.ResourceNotFoundException
 import com.yahya.quizbuilderkt.model.Quiz
+import com.yahya.quizbuilderkt.utils.InvalidQuestionExceptionType
 import com.yahya.quizbuilderkt.utils.PermalinkGenerator
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
@@ -43,7 +45,7 @@ class QuizService(val quizDao: QuizDao, val permalinkGenerator: PermalinkGenerat
     override fun update(quiz: Quiz): Quiz {
         val existingQuiz = findQuizById(quiz.id)
         if (existingQuiz.published) {
-            throw QuizAlreadyPublished.createWith(quiz.id)
+            throw QuizAlreadyPublishedException.createWith(quiz.id)
         }
         return save(quiz)
     }
@@ -56,13 +58,32 @@ class QuizService(val quizDao: QuizDao, val permalinkGenerator: PermalinkGenerat
         }
     }
 
+    private fun validateQuiz(quiz: Quiz): HashMap<Int, String> {
+        val map: HashMap<Int, String> = hashMapOf()
+        quiz.questions.forEach {
+            val validation = ChoiceService.validateChoices(it.choices, emptyList(), it)
+            if (validation != InvalidQuestionExceptionType.VALID_QUESTION) {
+                map[it.id] = validation.message
+            }
+        }
+        return map
+//        return quiz
+//            .questions
+//            .map { ChoiceService.validateChoices(it.choices, emptyList(), it) }
+//            .filter { it != InvalidQuestionExceptionType.VALID_QUESTION }
+    }
+
     override fun publishQuiz(id: Int): Quiz {
         val quiz = findQuizById(id)
         if (quiz.published) {
-            throw QuizAlreadyPublished.createWith(id)
+            throw QuizAlreadyPublishedException.createWith(id)
         }
         quiz.published = true
         quiz.permalink = permalinkGenerator.generatePermalink()
+        val validateQuiz = validateQuiz(quiz)
+        if (validateQuiz.isNotEmpty()) {
+            throw QuizPublishingException("quiz has invalid questions", validateQuiz)
+        }
         return save(quiz)
     }
 }
