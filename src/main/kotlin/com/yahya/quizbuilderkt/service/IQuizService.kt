@@ -1,5 +1,6 @@
 package com.yahya.quizbuilderkt.service
 
+import com.yahya.quizbuilderkt.exception.ResourceNotFoundException
 import com.yahya.quizbuilderkt.model.Quiz
 
 interface IQuizService {
@@ -10,6 +11,7 @@ interface IQuizService {
 
     fun findQuizzesBy(username: String): List<Quiz>
 
+    @kotlin.jvm.Throws(ResourceNotFoundException::class)
     fun findQuizById(id: Int): Quiz
 
     fun save(quiz: Quiz): Quiz
@@ -17,5 +19,6 @@ interface IQuizService {
     fun update(quiz: Quiz): Quiz
 
     fun delete(id: Int)
+    fun publishQuiz(id: Int): Quiz
 
 }

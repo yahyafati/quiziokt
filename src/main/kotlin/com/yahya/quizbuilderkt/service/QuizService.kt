@@ -1,13 +1,15 @@
 package com.yahya.quizbuilderkt.service
 
 import com.yahya.quizbuilderkt.dao.QuizDao
+import com.yahya.quizbuilderkt.exception.QuizAlreadyPublished
 import com.yahya.quizbuilderkt.exception.ResourceNotFoundException
 import com.yahya.quizbuilderkt.model.Quiz
+import com.yahya.quizbuilderkt.utils.PermalinkGenerator
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 
 @Service
-class QuizService(val quizDao: QuizDao) : IQuizService {
+class QuizService(val quizDao: QuizDao, val permalinkGenerator: PermalinkGenerator) : IQuizService {
     override fun exists(id: Int): Boolean {
         return quizDao.existsById(id)
     }
@@ -47,5 +49,15 @@ class QuizService(val quizDao: QuizDao) : IQuizService {
         } catch (e: EmptyResultDataAccessException) {
             throw ResourceNotFoundException("no question exists with the given quiz id: $id")
         }
+    }
+
+    override fun publishQuiz(id: Int): Quiz {
+        val quiz = findQuizById(id)
+        if (quiz.published) {
+            throw QuizAlreadyPublished.createWith(id)
+        }
+        quiz.published = true
+        quiz.permalink = permalinkGenerator.generatePermalink()
+        return save(quiz)
     }
 }

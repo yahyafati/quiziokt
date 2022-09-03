@@ -18,6 +18,12 @@ class QuizController(val quizService: IQuizService, private val authenticationFa
         return ResponseEntity.ok(quizzes)
     }
 
+    @PatchMapping("/publish")
+    fun publishQuiz(@RequestParam id: Int): ResponseEntity<Any> {
+        quizService.publishQuiz(id);
+        return ResponseEntity.ok().build()
+    }
+
     @GetMapping("/{id}")
     fun getQuiz(@PathVariable id: Int): ResponseEntity<Any> {
         val quiz: Quiz = quizService.findQuizById(id)
