@@ -31,6 +31,11 @@ class QuizService(val quizDao: QuizDao, val permalinkGenerator: PermalinkGenerat
         return quizOptional.orElseThrow { ResourceNotFoundException.createWith("quiz", id) }
     }
 
+    override fun findQuizByPermalink(permalink: String): Quiz {
+        return quizDao.findQuizByPermalink(permalink)
+            ?: throw ResourceNotFoundException("no quiz can be found with the given permalink")
+    }
+
     override fun save(quiz: Quiz): Quiz {
         return quizDao.save(quiz)
     }

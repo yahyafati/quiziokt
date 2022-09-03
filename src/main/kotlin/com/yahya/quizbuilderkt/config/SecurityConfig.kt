@@ -29,7 +29,7 @@ class SecurityConfig(private val authenticationManager: AuthenticationManager, p
             .addFilter(JWTAuthenticationFilter(authenticationManager))
             .addFilter(JWTAuthorizationFilter(authenticationManager, userService))
             .authorizeRequests()
-            .antMatchers(HttpMethod.GET, "/api/v1/quiz/permalink/*").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/v1/quiz/permalink").permitAll()
             .antMatchers(HttpMethod.POST, SecurityConstants.LOGIN_URL).permitAll()
             .antMatchers(HttpMethod.POST, "/api/v1/user/register").permitAll()
             .antMatchers(HttpMethod.GET, "/api/v1/user/isAvailable").permitAll()

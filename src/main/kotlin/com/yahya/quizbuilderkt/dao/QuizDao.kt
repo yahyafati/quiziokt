@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface QuizDao : JpaRepository<Quiz, Int> {
 
     fun findAllByCreatedByUsername(username: String): List<Quiz>
-
+    fun findQuizByPermalink(permalink: String): Quiz?
     fun existsByIdAndCreatedByUsername(id: Int, username: String): Boolean
 
 }

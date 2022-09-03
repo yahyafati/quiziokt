@@ -1,11 +1,13 @@
 package com.yahya.quizbuilderkt.model
 
+import com.fasterxml.jackson.annotation.JsonFilter
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
 
 @Entity
+@JsonFilter("ChoiceFilter")
 class Choice(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

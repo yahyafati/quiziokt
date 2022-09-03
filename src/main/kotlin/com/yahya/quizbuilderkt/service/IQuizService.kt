@@ -13,6 +13,7 @@ interface IQuizService {
 
     @kotlin.jvm.Throws(ResourceNotFoundException::class)
     fun findQuizById(id: Int): Quiz
+    fun findQuizByPermalink(permalink: String): Quiz
 
     fun save(quiz: Quiz): Quiz
 

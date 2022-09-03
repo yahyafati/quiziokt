@@ -1,5 +1,6 @@
 package com.yahya.quizbuilderkt.model
 
+import com.fasterxml.jackson.annotation.JsonFilter
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.Hibernate
@@ -7,11 +8,12 @@ import javax.persistence.*
 import javax.validation.constraints.NotBlank
 
 @Entity
+@JsonFilter("QuizFilter")
 class Quiz(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Int = 0,
     @Column(nullable = false)
     @field:NotBlank(message = "Quiz title can't be blank")
-    var title: String? = "",
+    var title: String = "",
     var description: String? = null,
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     var permalink: String? = null,
@@ -21,7 +23,7 @@ class Quiz(
 
     @JsonIgnore
     @OneToMany(cascade = [CascadeType.REMOVE], mappedBy = "quiz")
-    private val questions: List<Question> = emptyList()
+    val questions: List<Question> = emptyList()
 ) : Auditable(), IModel {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
