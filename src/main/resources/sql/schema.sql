@@ -62,7 +62,7 @@ create table if not exists question (
     text                varchar(255) not null,
     created_by_id       int          null,
     last_modified_by_id int          null,
-    quiz_id             int          null,
+    quiz_id             int          not null,
 --     constraint FK2lg4o3vff5f3s5fsibw9ei82v
     foreign key (last_modified_by_id) references user (id),
 --     constraint FKb0yh0c1qaxfwlcnwo9dms2txf
@@ -77,7 +77,7 @@ create table if not exists choice (
     id          int auto_increment primary key,
     answer      bit          not null,
     text        varchar(255) not null,
-    question_id int          null,
+    question_id int          not null,
 --     constraint FKcaq6r76cswke5b9fk6fyx3y5w
     foreign key (question_id) references question (id) on delete cascade
 );
