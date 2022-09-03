@@ -29,7 +29,7 @@ create table if not exists user_profile (
     update_time   datetime(6)  null,
     user_id       int          null,
 --     constraint FK6kwj5lk78pnhwor4pgosvb51r
-    foreign key (user_id) references user (id)
+    foreign key (user_id) references user (id) on delete cascade
 );
 
 -- auto-generated definition
@@ -48,7 +48,7 @@ create table if not exists quiz (
 --     constraint FKjdf2822csq8qv3rbiywwayrn6
     foreign key (last_modified_by_id) references user (id),
 --     constraint FKs8lo0w5qbupnrp6y8i6hrdqb8
-    foreign key (created_by_id) references user (id)
+    foreign key (created_by_id) references user (id) on delete cascade
 );
 
 -- auto-generated definition
@@ -66,7 +66,7 @@ create table if not exists question (
 --     constraint FK2lg4o3vff5f3s5fsibw9ei82v
     foreign key (last_modified_by_id) references user (id),
 --     constraint FKb0yh0c1qaxfwlcnwo9dms2txf
-    foreign key (quiz_id) references quiz (id),
+    foreign key (quiz_id) references quiz (id) on delete cascade,
 --     constraint FKehgqq6539br96ih88in0y2two
     foreign key (created_by_id) references user (id)
 );
@@ -79,6 +79,6 @@ create table if not exists choice (
     text        varchar(255) not null,
     question_id int          null,
 --     constraint FKcaq6r76cswke5b9fk6fyx3y5w
-    foreign key (question_id) references question (id)
+    foreign key (question_id) references question (id) on delete cascade
 );
 
