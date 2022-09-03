@@ -14,7 +14,7 @@ class QuizController(val quizService: IQuizService, private val authenticationFa
 
     @GetMapping("")
     fun getAll(): ResponseEntity<Any> {
-        val quizzes = quizService.findQuizzesBy(authenticationFacade.username)
+        val quizzes = quizService.findQuizzesBy(authenticationFacade.username!!)
         return ResponseEntity.ok(quizzes)
     }
 

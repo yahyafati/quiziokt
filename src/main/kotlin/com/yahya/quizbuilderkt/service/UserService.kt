@@ -16,6 +16,11 @@ class UserService(private val userDao: UserDao, private val passwordEncoder: Pas
             ?: throw UsernameNotFoundException("no user with username $username")
     }
 
+    override fun findUserIdByUsername(username: String): Int {
+        return userDao.findUserIdByUsername(username)
+            ?: throw UsernameNotFoundException("no user with username $username")
+    }
+
     override fun usernameExists(username: String): Boolean {
         return userDao.existsByUsername(username)
     }

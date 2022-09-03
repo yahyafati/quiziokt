@@ -3,11 +3,11 @@ package com.yahya.quizbuilderkt.security
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
+import com.yahya.quizbuilderkt.model.User
 import com.yahya.quizbuilderkt.service.IUserService
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
@@ -55,19 +55,15 @@ class JWTAuthorizationFilter(authenticationManager: AuthenticationManager?, user
                 .build()
                 .verify(token)
                 .subject ?: return null
-            //            Checks whether logged-in username still exists!
-//            val loggedInUser: User = userService.findByUsername(username)
-            val userExists = userService.usernameExists(username)
-            if (!userExists) return null
+            val loggedInUser: User = userService.findByUsername(username)
             return UsernamePasswordAuthenticationToken(
-                username,
+                loggedInUser,
                 null,
-                listOf<GrantedAuthority>()
+                loggedInUser.authorities
             )
         } catch (ex: JWTVerificationException) {
             LOG.error(ex.message)
         } catch (ex: UsernameNotFoundException) {
-//            NO Way it will reach here.
             LOG.error(ex.message)
         }
         return null

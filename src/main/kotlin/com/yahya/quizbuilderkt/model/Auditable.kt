@@ -22,6 +22,7 @@ open class Auditable(
     @LastModifiedBy
     @ManyToOne
     @JsonIgnore
+    @JoinColumn(updatable = false)
     var lastModifiedBy: User? = null,
 
 //    @CreatedBy

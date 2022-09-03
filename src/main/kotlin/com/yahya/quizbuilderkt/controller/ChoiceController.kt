@@ -20,7 +20,7 @@ class ChoiceController(
     @GetMapping("")
     fun getAll(@RequestParam(name = "question") questionId: Int): ResponseEntity<Any> {
         val choicesByQuestionId =
-            choiceService.getChoicesByQuestionIdAndUsername(questionId, authenticationFacade.username)
+            choiceService.getChoicesByQuestionIdAndUsername(questionId, authenticationFacade.username!!)
         return ResponseEntity.ok(choicesByQuestionId)
     }
 

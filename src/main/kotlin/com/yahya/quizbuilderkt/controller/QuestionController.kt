@@ -20,7 +20,7 @@ class QuestionController(
 
     @GetMapping("")
     fun getAll(@RequestParam quiz: Int): ResponseEntity<Any> {
-        val questions = questionService.findQuestionsByQuizIdAndUsername(quiz, authenticationFacade.username)
+        val questions = questionService.findQuestionsByQuizIdAndUsername(quiz, authenticationFacade.username!!)
         val value = Util.applyFilterOut(questions, "QuestionFilter", "id", "text", "multi")
         return ResponseEntity.ok(value)
     }

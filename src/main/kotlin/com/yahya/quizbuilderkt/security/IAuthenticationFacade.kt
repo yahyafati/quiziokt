@@ -6,7 +6,8 @@ import org.springframework.security.core.Authentication
 
 interface IAuthenticationFacade {
     companion object {
-        fun equals(username1: String, username2: String): Boolean {
+        fun equals(username1: String?, username2: String?): Boolean {
+            if (username1 == null || username2 == null) return false
             return username1.equals(username2, ignoreCase = true)
         }
 
@@ -17,7 +18,7 @@ interface IAuthenticationFacade {
     }
 
     fun equalsAuth(user: User?): Boolean {
-        return equals(user?.username!!, username)
+        return equals(user?.username, username)
     }
 
     fun equalsAuth(auditable: Auditable?): Boolean {
@@ -26,8 +27,23 @@ interface IAuthenticationFacade {
 
     val authentication: Authentication?
 
-    val username: String
-        get() = authentication!!.name
+    val username: String?
+        get() {
+            val principal = authentication?.principal
+            if (principal is User) {
+                return principal.username
+            }
+            return null
+        }
+
+    val currentUser: User?
+        get() {
+            val principal = authentication?.principal
+            if (principal is User) {
+                return principal
+            }
+            return null
+        }
 
 
 }
