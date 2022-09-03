@@ -27,7 +27,8 @@ class GlobalExceptionHandler {
         MissingServletRequestParameterException::class,
         InvalidQuestionException::class,
         UsernameTakenException::class,
-        AccessDeniedException::class
+        AccessDeniedException::class,
+        QuizAlreadyPublished::class
     )
     fun handleException(ex: Exception, request: WebRequest): ResponseEntity<ErrorResponse> {
         val headers = HttpHeaders()
@@ -64,12 +65,25 @@ class GlobalExceptionHandler {
                 val status = HttpStatus.BAD_REQUEST
                 handleUsernameTakenException(ex, headers, status)
             }
+            is QuizAlreadyPublished -> {
+                LOG.warn("{} {}", ex.javaClass.name, ex.message)
+                val status = HttpStatus.CONFLICT
+                handleQuizAlreadyPublished(ex, headers, status)
+            }
             else -> {
                 LOG.error("{} {}", ex.javaClass.name, ex.message)
                 val status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
                 handleExceptionInternal(ex, ErrorResponse(ex.message), headers, status, request)
             }
         }
+    }
+
+    private fun handleQuizAlreadyPublished(
+        ex: QuizAlreadyPublished,
+        headers: HttpHeaders,
+        status: HttpStatus
+    ): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(status).headers(headers).body(ErrorResponse(ex.message, exception = ex))
     }
 
     private fun handleAccessDeniedException(

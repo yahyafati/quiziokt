@@ -36,9 +36,9 @@ class QuizService(val quizDao: QuizDao, val permalinkGenerator: PermalinkGenerat
     }
 
     override fun update(quiz: Quiz): Quiz {
-        val exists = exists(quiz.id)
-        if (!exists) {
-            throw ResourceNotFoundException.createWith("quiz", quiz.id)
+        val existingQuiz = findQuizById(quiz.id)
+        if (existingQuiz.published) {
+            throw QuizAlreadyPublished.createWith(quiz.id)
         }
         return save(quiz)
     }

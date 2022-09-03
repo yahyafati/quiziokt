@@ -2,6 +2,7 @@ package com.yahya.quizbuilderkt.service
 
 import com.yahya.quizbuilderkt.dao.ChoiceDao
 import com.yahya.quizbuilderkt.exception.InvalidQuestionException
+import com.yahya.quizbuilderkt.exception.QuizAlreadyPublished
 import com.yahya.quizbuilderkt.exception.ResourceNotFoundException
 import com.yahya.quizbuilderkt.model.Choice
 import com.yahya.quizbuilderkt.model.Question
@@ -53,6 +54,10 @@ class ChoiceService(
     override fun save(choice: Choice): Choice {
         val question: Question = choice.question ?: throw IllegalArgumentException("no question provided")
         val questionFromDB = questionService.findQuestionById(question.id)
+        val quiz = question.quiz ?: throw IllegalArgumentException("quiz is null")
+        if (quiz.published) {
+            throw QuizAlreadyPublished.createWith((quiz.id))
+        }
         val choices = mutableListOf<Choice>()
 
         choices.addAll(choiceDao.findAllByQuestionId(questionId = questionFromDB.id))
@@ -71,6 +76,10 @@ class ChoiceService(
         }
         val questionId = choices[0].question?.id ?: throw IllegalArgumentException("no question provided")
         val question = questionService.findQuestionById(questionId)
+        val quiz = question.quiz ?: throw IllegalArgumentException("quiz is null")
+        if (quiz.published) {
+            throw QuizAlreadyPublished.createWith(quiz.id)
+        }
         if (!authenticationFacade.equalsAuth(question)) {
             throw AccessDeniedException("can't access this question")
         }

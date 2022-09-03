@@ -2,6 +2,7 @@ package com.yahya.quizbuilderkt.service
 
 import com.yahya.quizbuilderkt.dao.QuestionDao
 import com.yahya.quizbuilderkt.exception.InvalidQuestionException
+import com.yahya.quizbuilderkt.exception.QuizAlreadyPublished
 import com.yahya.quizbuilderkt.exception.ResourceNotFoundException
 import com.yahya.quizbuilderkt.model.Question
 import com.yahya.quizbuilderkt.model.Quiz
@@ -38,7 +39,11 @@ class QuestionService(val questionDao: QuestionDao, val quizService: IQuizServic
 
     override fun save(question: Question): Question {
         val quiz: Quiz = question.quiz ?: throw ResourceNotFoundException("no quiz provided")
-        question.quiz = quizService.findQuizById(quiz.id)
+        val quizFromDB = quizService.findQuizById(quiz.id)
+        question.quiz = quizFromDB
+        if (quizFromDB.published) {
+            throw QuizAlreadyPublished.createWith(quiz.id)
+        }
         return questionDao.save(question)
     }
 
