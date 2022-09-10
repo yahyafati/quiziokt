@@ -13,9 +13,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
 
 
 @Configuration
@@ -24,6 +26,21 @@ class WebConfig(val appProperties: AppProperties) : WebMvcConfigurer {
 
     companion object {
         val LOG: Logger = LoggerFactory.getLogger(WebConfig::class.java)
+    }
+
+    override fun addCorsMappings(registry: CorsRegistry) {
+        registry.addMapping("/api/**")
+//            .allowedOriginPatterns(
+//                "https://*.prodegepeeq.com",
+//                "http://*.pmrdev.com:[*]",
+//                "https://*.pmrdev.com:[*]",
+//                "http://*.devpeeq.com:[*]",
+//                "https://*.devpeeq.com:[*]"
+//            )
+            .allowedOriginPatterns("*")
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+            .allowedHeaders("*")
+            .maxAge(TimeUnit.HOURS.toSeconds(6))
     }
 
     override fun configureMessageConverters(converters: MutableList<HttpMessageConverter<*>>) {

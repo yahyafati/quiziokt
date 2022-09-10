@@ -12,6 +12,9 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.filter.CorsFilter
 
 
 @Configuration
@@ -41,6 +44,19 @@ class SecurityConfig(private val authenticationManager: AuthenticationManager, p
         // Add a filter to validate the tokens with every request
 //        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java)
 //        return httpSecurity.build()
+    }
+
+    @Bean
+    fun corsFilter(): CorsFilter {
+        val source = UrlBasedCorsConfigurationSource()
+        val config = CorsConfiguration()
+//        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*")
+        config.addAllowedHeader("*")
+        config.addAllowedMethod("*")
+        config.addExposedHeader(SecurityConstants.HEADER_STRING)
+        source.registerCorsConfiguration("/**", config)
+        return CorsFilter(source)
     }
 
 
