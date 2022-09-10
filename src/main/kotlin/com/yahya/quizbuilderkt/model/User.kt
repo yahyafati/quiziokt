@@ -25,15 +25,15 @@ class User(
     @JsonIgnore
     var id: Int = 0,
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE], mappedBy = "user")
-    @JsonIgnore
-    private var profile: UserProfile? = null,
-
     @CreatedDate
     var creationTime: Timestamp? = null,
     @LastModifiedDate
     var updateTime: Timestamp? = null
 ) : UserDetails {
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE], mappedBy = "user")
+    @JsonIgnore
+    var profile: UserProfile? = null
 
     @Column(unique = true)
     @field:NotBlank

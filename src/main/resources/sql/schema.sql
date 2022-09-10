@@ -24,10 +24,11 @@ create table if not exists user (
 -- User Profile
 create table if not exists user_profile (
     id            int auto_increment primary key,
+    name          varchar(255) null,
     bio           varchar(255) null,
     creation_time datetime(6)  null,
     update_time   datetime(6)  null,
-    user_id       int          null,
+    user_id       int          not null,
 --     constraint FK6kwj5lk78pnhwor4pgosvb51r
     foreign key (user_id) references user (id) on delete cascade
 );
